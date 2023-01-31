@@ -16,10 +16,16 @@
     <Filter Include="classes">
       <UniqueIdentifier>{037d15dd-e7c2-44dc-9294-4d9b27ddb7a3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="db">
+      <UniqueIdentifier>{a94c3361-5080-4474-b5af-6f14224d03d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="db\mysql.cpp">
+      <Filter>db</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -46,6 +52,9 @@
     </ClInclude>
     <ClInclude Include="classes\team.hpp">
       <Filter>classes</Filter>
+    </ClInclude>
+    <ClInclude Include="db\mysql.hpp">
+      <Filter>db</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
