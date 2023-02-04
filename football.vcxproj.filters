@@ -56,21 +56,12 @@
     <ClInclude Include="db\mysql.hpp">
       <Filter>db</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="classes\stadium.hpp">
       <Filter>classes</Filter>
     </ClInclude>
     <ClInclude Include="classes\season.hpp">
       <Filter>classes</Filter>
     </ClInclude>
-=======
-    <ClInclude Include="season.hpp">
-      <Filter>classes</Filter>
-    </ClInclude>
-    <ClInclude Include="classes\stadium.hpp">
-      <Filter>classes</Filter>
-    </ClInclude>
->>>>>>> 784eb5e0d96daa7cd3454dd76a9397e673a7993e
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

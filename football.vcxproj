@@ -156,14 +156,10 @@
     <ClInclude Include="classes\player.hpp" />
     <ClInclude Include="classes\referee.hpp" />
     <ClInclude Include="classes\score.hpp" />
-<<<<<<< HEAD
     <ClInclude Include="classes\season.hpp" />
-=======
->>>>>>> 784eb5e0d96daa7cd3454dd76a9397e673a7993e
     <ClInclude Include="classes\stadium.hpp" />
     <ClInclude Include="classes\team.hpp" />
     <ClInclude Include="db\mysql.hpp" />
-    <ClInclude Include="season.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
