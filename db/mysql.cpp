@@ -2,7 +2,7 @@
 
 #include <cppconn/driver.h>
 
-#include <format>
+#include <fmt/core.h>
 
 
 namespace mysql
@@ -43,7 +43,7 @@ namespace mysql
 	{
 		set(field_name, value);
 
-		std::string stmt = std::format("SELECT {} FROM {} WHERE {} = {};", fields(), tablename, field_name, value);
+		std::string stmt = fmt::format("SELECT {} FROM {} WHERE {} = {};", fields(), tablename, field_name, value);
 
 		srv.connect();
 		srv.prepare(stmt);
