@@ -4,6 +4,7 @@
 #include "referee.hpp"
 #include "championship.hpp"
 #include "score.hpp"
+#include "stadium.hpp"
 
 namespace football
 {
@@ -16,6 +17,7 @@ namespace football
 		team teamB;
 		referee referee;
 		score score;
+		stadium stadium;
 
 	};
 
