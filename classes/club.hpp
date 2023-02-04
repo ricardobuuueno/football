@@ -11,11 +11,11 @@ namespace football
 	{
 	public:
 		club(const std::string& club_name) 
-			: table("clubs"), _id(0), _name(club_name)
+			: table("clubs"), _id(""), _name(club_name)
 		{
 			if (select("name", _name))
 			{
-				_id = get<unsigned>("id");
+				_id = get("id");
 			}
 		}
 
@@ -25,16 +25,16 @@ namespace football
 		{
 			set("id", _id);
 			set("name", _name);
-			return go();
+			return execute();
 		}
 
-		unsigned id() const { return _id; }
+		std::string id() const { return _id; }
 		std::string name() const { return _name; }
 
 		void name(const std::string& club_name) { _name = club_name; }
 
 	private:
-		unsigned _id;
+		std::string _id;
 		std::string _name;
 
 	};

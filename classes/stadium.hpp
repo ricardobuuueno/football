@@ -2,12 +2,10 @@
 
 #include <string>
 
-#include "club.hpp"
-
 namespace football
 {
 
-	class championship final
+	class stadium final
 	{
 	public:
 		std::string name;
