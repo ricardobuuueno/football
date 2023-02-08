@@ -1,8 +1,13 @@
 
 #include <iostream>
+#include "classes/club.hpp"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	using namespace football;
+
+	club sp{"São Paulo"};
+
+    std::cout << "Club: " << sp.id() << " " << sp.name() << '\n';
 }
 

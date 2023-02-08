@@ -15,4 +15,4 @@ team.hpp
 
 set_target_properties(classes PROPERTIES LINKER_LANGUAGE CXX)
 
-target_include_directories(classes PUBLIC include)
+target_include_directories(classes PRIVATE classes)

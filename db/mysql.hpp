@@ -8,11 +8,6 @@
 #include <cppconn/resultset.h>
 #include <cppconn/prepared_statement.h>
 
-const std::string server_url = "";
-const std::string username = "";
-const std::string password = "";
-const std::string database = "";
-
 namespace mysql
 {
 

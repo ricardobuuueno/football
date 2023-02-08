@@ -1,9 +1,10 @@
 #include "mysql.hpp"
 
 #include <cppconn/driver.h>
-
 #include <fmt/core.h>
+#include <optional>
 
+#include "../util/toml.hpp"
 
 namespace mysql
 {
@@ -17,13 +18,24 @@ namespace mysql
 		}
 
 		if (!connection) {
-			connection = driver->connect(server_url, username, password);
+
+			toml::table config = toml::parse_file("football.toml");
+			auto my_config = config["mysql"];
+
+			auto server = my_config["server"].value<std::string>();
+			auto port = my_config["port"].value<std::string>();
+			auto username = my_config["username"].value<std::string>();
+			auto password = my_config["password"].value<std::string>();
+			auto database = my_config["database"].value<std::string>();
+
+			connection = driver->connect(server.value(), username.value(), password.value());
+
+			connection->setSchema(database.value());
+
 		}
 		else if (connection->isClosed()) {
 			connection->reconnect();
 		}
-
-		connection->setSchema(database);
 
 	}
 
@@ -43,7 +55,7 @@ namespace mysql
 	{
 		set(field_name, value);
 
-		std::string stmt = fmt::format("SELECT {} FROM {} WHERE {} = {};", fields(), tablename, field_name, value);
+		std::string stmt = fmt::format("SELECT {} FROM {} WHERE {} = '{}';", fields(), tablename, field_name, value);
 
 		srv.connect();
 		srv.prepare(stmt);

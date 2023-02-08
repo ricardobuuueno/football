@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mysql.hpp"
+#include "../db/mysql.hpp"
 
 #include <string>
 
