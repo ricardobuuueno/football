@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(classes)
 add_subdirectory(db)
 add_subdirectory(util)
+add_subdirectory(plog)
 
 add_executable(football 
 main.cpp
@@ -21,3 +22,4 @@ target_link_libraries(football PUBLIC classes db util)
 target_include_directories(classes PRIVATE ~/football/classes/)
 target_include_directories(db PRIVATE ~/football/db/)
 target_include_directories(util PRIVATE ~/football/util/)
+target_include_directories(plog PRIVATE ~/football/plog/)
