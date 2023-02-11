@@ -3,3 +3,4 @@ x64/
 build/
 .vscode/
 bin/football
+bin/*.log

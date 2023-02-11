@@ -4,3 +4,6 @@ port = "3306"
 database = "football"
 username = "dev"
 password = "dev@123"
+
+[log]
+file = "football.log"

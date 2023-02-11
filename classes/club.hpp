@@ -11,22 +11,15 @@ namespace football
 	{
 	public:
 		club(const std::string& club_name) 
-			: table("clubs"), _id(""), _name(club_name)
+			: table("clubs", "name"), _id(""), _name(club_name)
 		{
-			if (select("name", _name))
+			if (start("name", _name))
 			{
 				_id = get("id");
 			}
 		}
 
 		club() : club("") {}
-
-		bool save() override
-		{
-			set("id", _id);
-			set("name", _name);
-			return execute();
-		}
 
 		std::string id() const { return _id; }
 		std::string name() const { return _name; }
@@ -36,6 +29,18 @@ namespace football
 	private:
 		std::string _id;
 		std::string _name;
+
+		void populate() override
+		{
+			set("id", _id);
+			set("name", _name);
+		}
+
+		void reset() override
+		{
+			_id = get("id");
+			_name = get("name");
+		}
 
 	};
 
