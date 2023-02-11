@@ -1,9 +1,10 @@
 #pragma once
 
-#include <vector>
+#include <map>
 
 #include "club.hpp"
 #include "player.hpp"
+#include "manager.hpp"
 
 namespace football
 {
@@ -12,7 +13,8 @@ namespace football
 	{
 	public:
 		club club;
-		std::vector<player> players;
+		std::map<int, player> players;
+		manager manager;
 
 	};
 

@@ -13,9 +13,11 @@ int main()
 
 	toml::table config = toml::parse_file(CONFIG_FILE);
 	auto log_config = config["log"];
-	auto log_file = log_config["file"].value<std::string>();
+	auto severity = log_config["severity"].value<int>();
+	auto file = log_config["file"].value<std::string>();
+	auto maxFileSize = log_config["maxFileSize"].value<size_t>();
 
-	plog::init(plog::debug, log_file.value().c_str(), 5000, 3);
+	plog::init(static_cast<plog::Severity>(severity.value()), file.value().c_str(), maxFileSize.value(), 3);
 
 	club sp{"São Paulo"};
 	bool saved = sp.save();

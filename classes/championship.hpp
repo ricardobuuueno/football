@@ -11,6 +11,7 @@ namespace football
 	{
 	public:
 		std::string name;
+		std::string country;
 
 	};
 

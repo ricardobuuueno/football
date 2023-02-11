@@ -11,6 +11,8 @@ namespace football
 	public:
 		club club;
 		player player;
+		int period;
+		int minute;
 
 	};
 

@@ -1,8 +1,11 @@
 #pragma once
 
+#include "player.hpp"
+
 #include "../db/mysql.hpp"
 
 #include <string>
+#include <vector>
 
 namespace football
 {
@@ -11,7 +14,7 @@ namespace football
 	{
 	public:
 		club(const std::string& club_name) 
-			: table("clubs", "name"), _id(""), _name(club_name)
+			: table("clubs", "name"), _id(""), _name(club_name), _players{}
 		{
 			if (start("name", _name))
 			{
@@ -29,6 +32,7 @@ namespace football
 	private:
 		std::string _id;
 		std::string _name;
+		std::vector<player> _players;
 
 		void populate() override
 		{

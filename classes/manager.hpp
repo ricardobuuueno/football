@@ -5,11 +5,10 @@
 namespace football
 {
 
-	class stadium final
+	class manager final
 	{
 	public:
-		std::string name;
-		std::string country;
+        std::string name;
 
 	};
 

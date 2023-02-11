@@ -9,9 +9,21 @@ add_subdirectory(db)
 add_subdirectory(util)
 add_subdirectory(plog)
 
+# search for clang-tidy
+find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRED)
+
+# setup clang-tidy command from executable + options
+set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}" "-checks=-*,modernize-*")
+
 add_executable(football 
 main.cpp
 )
+
+# set CXX_CLANG_TIDY property after defining the target
+set_target_properties(football 
+PROPERTIES 
+CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+
 set_target_properties(football 
 PROPERTIES 
 RUNTIME_OUTPUT_DIRECTORY "~/football/bin"

@@ -12,8 +12,8 @@ namespace football
 	class season final
 	{
 	public:
-		std::string year;
 		championship championship;
+		std::string year;
 		std::vector<club> clubs;
 
 	};
