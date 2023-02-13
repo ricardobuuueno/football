@@ -10,8 +10,9 @@ namespace football
 	class championship final
 	{
 	public:
-		std::string name;
-		std::string country;
+		std::string _id;
+		std::string _name;
+		std::string _country;
 
 	};
 

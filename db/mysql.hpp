@@ -11,7 +11,18 @@
 namespace mysql
 {
 
-	std::string random_string(const int len);
+	struct environment final
+	{
+		std::string server;
+		std::string port;
+		std::string username;
+		std::string password;
+		std::string database;		
+	};
+
+	extern std::unique_ptr<environment> env;
+
+	auto init(const std::string& config_filename) -> void;
 
 	class server final
 	{
@@ -21,7 +32,7 @@ namespace mysql
 		void prepare(const std::string& stmt);
 		void execute();
 		
-		bool has_rows() const;
+		auto has_rows() const -> bool;
 		void get_values(std::map<std::string, std::string>& field_values) const;
 
 	private:
@@ -30,6 +41,8 @@ namespace mysql
 		sql::Statement* stmt{ nullptr };
 		sql::PreparedStatement* pstmt{ nullptr };
 		sql::ResultSet* result{ nullptr };
+
+		static std::string configuration_filename;
 
 	};
 
@@ -43,13 +56,13 @@ namespace mysql
 
 		virtual ~table() {}
 
-		[[nodiscard]] bool save();
+		[[nodiscard]] auto save() -> bool;
 
 	protected:
 
-		bool start(const std::string& field_name, const std::string& value);
+		auto start(const std::string& field_name, const std::string& value) -> bool;
 
-		std::string get(const std::string& field_name) const;
+		auto get(const std::string& field_name) const -> std::string;
 
 		void set(const std::string& field_name, const std::string& value);
 
@@ -63,12 +76,12 @@ namespace mysql
 
 		server srv{};
 
-		std::string fields() const;
-		std::string values() const;
+		auto fields() const -> std::string;
+		auto values() const -> std::string;
 
-		bool select(const std::string& stmt);
-		bool insert();
-		bool reload();
+		auto select(const std::string& stmt) -> bool;
+		auto insert() -> bool;
+		auto reload() -> bool;
 
 	};
 

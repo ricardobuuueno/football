@@ -2,6 +2,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_library(util
 toml.hpp
+util.cpp
 )
 
 # search for clang-tidy

@@ -3,28 +3,26 @@
 #include <cppconn/driver.h>
 #include <fmt/core.h>
 #include <optional>
-#include <ctime>
 
 #include "../plog/Log.h"
 #include "../util/toml.hpp"
-#include "../constants.hpp"
 
 namespace mysql
 {
+	std::unique_ptr<environment> env = nullptr;
 
-	std::string random_string(const int len) 
+	auto init(const std::string& config_filename) -> void
 	{
-		static const char alphanum[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+		env = std::make_unique<environment>();
 
-		srand((unsigned)time(NULL) * getpid()); 
-		std::string tmp_s;
-		tmp_s.reserve(len);
+		toml::table config = toml::parse_file(config_filename);
+		auto my_config = config["mysql"];
 
-		for (int i = 0; i < len; ++i) {
-			tmp_s += alphanum[rand() % (sizeof(alphanum) - 1)];
-		}
-		
-		return tmp_s;
+		env->server = my_config["server"].value<std::string>().value();
+		env->port = my_config["port"].value<std::string>().value();
+		env->username = my_config["username"].value<std::string>().value();
+		env->password = my_config["password"].value<std::string>().value();
+		env->database = my_config["database"].value<std::string>().value();
 	}
 
 //SERVER ----------------------------------------------------------------------------------------
@@ -37,18 +35,9 @@ namespace mysql
 
 		if (!connection) {
 
-			toml::table config = toml::parse_file(CONFIG_FILE);
-			auto my_config = config["mysql"];
+			connection = driver->connect(env->server, env->username, env->password);
 
-			auto server = my_config["server"].value<std::string>();
-			auto port = my_config["port"].value<std::string>();
-			auto username = my_config["username"].value<std::string>();
-			auto password = my_config["password"].value<std::string>();
-			auto database = my_config["database"].value<std::string>();
-
-			connection = driver->connect(server.value(), username.value(), password.value());
-
-			connection->setSchema(database.value());
+			connection->setSchema(env->database);
 
 		}
 		else if (connection->isClosed()) {
@@ -67,7 +56,7 @@ namespace mysql
 		result = pstmt->executeQuery();
 	}
 
-	bool server::has_rows() const
+	auto server::has_rows() const -> bool
 	{
 		PLOG_DEBUG << result->rowsCount();
 		return (result != nullptr && result->rowsCount() > 0);
@@ -92,7 +81,7 @@ namespace mysql
 
 //TABLE ----------------------------------------------------------------------------------------
 
-	bool table::start(const std::string& field_name, const std::string& value)
+	auto table::start(const std::string& field_name, const std::string& value) -> bool
 	{		
 		std::string stmt = fmt::format("SELECT {} FROM {} WHERE {} = '{}' LIMIT 1;", fields(), tablename, field_name, value);
 		
@@ -105,7 +94,7 @@ namespace mysql
 		return false;
 	}
 
-	std::string table::get(const std::string& field_name) const
+	auto table::get(const std::string& field_name) const -> std::string
 	{
 		return fields_values.at(field_name);
 	}
@@ -117,7 +106,7 @@ namespace mysql
 		}
 	}
 
-	bool table::save()
+	auto table::save() -> bool
 	{
 		populate();
 
@@ -131,7 +120,7 @@ namespace mysql
 		return false;
 	}
 
-	bool table::select(const std::string& stmt)
+	auto table::select(const std::string& stmt) -> bool
 	{
 		PLOG_DEBUG << stmt;
 
@@ -148,7 +137,7 @@ namespace mysql
 		return false;
 	}
 
-	bool table::insert()
+	auto table::insert() -> bool
 	{
 		std::string stmt = fmt::format("REPLACE INTO {} ({}) VALUES ({});", tablename, fields(), values());
 		PLOG_DEBUG << stmt;
@@ -160,13 +149,13 @@ namespace mysql
 		return true;
 	}
 
-	bool table::reload()
+	auto table::reload() -> bool
 	{
 		std::string stmt = fmt::format("SELECT * FROM {} WHERE {} = '{}' LIMIT 1;", tablename, key_field, fields_values[key_field]);
 		return select(stmt);
 	}
 
-	std::string table::fields() const
+	auto table::fields() const -> std::string
 	{
 		if (fields_values.empty()) {
 			return {"*"};
@@ -185,7 +174,7 @@ namespace mysql
 		return result;
 	}
 
-	std::string table::values() const
+	auto table::values() const -> std::string
 	{
 		std::string result{};
 

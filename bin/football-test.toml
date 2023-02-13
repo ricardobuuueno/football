@@ -1,0 +1,12 @@
+[mysql]
+server = "localhost"
+port = "3306"
+database = "football"
+username = "dev"
+password = "dev@123"
+
+[log]
+file = "football-test.log"
+severity = 5
+maxFileSize = 5000
+maxFiles = 3
