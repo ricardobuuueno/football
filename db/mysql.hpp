@@ -57,6 +57,7 @@ namespace mysql
 		virtual ~table() {}
 
 		[[nodiscard]] auto save() -> bool;
+		[[nodiscard]] auto remove() -> bool;
 
 	protected:
 

@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "../globals.hpp"
+#include "../classes/championship.hpp"
 #include "../classes/club.hpp"
 
 class FootballEnvironment : public ::testing::Environment {
@@ -36,9 +37,24 @@ int main(int argc, char **argv)
   	return RUN_ALL_TESTS();
 }
 
-TEST(Clubs, club_name) 
+TEST(Championships, new_championship_added) 
 {
-	football::club sp{ "São Paulo" };
-	EXPECT_EQ(sp.name(), "São Paulo");
+	football::championship cs{ "Championship", "GB" };
+	EXPECT_EQ(cs.id(), "");
+
+	auto saved = cs.save();
+	EXPECT_EQ(saved, true);
+
+	EXPECT_NE(cs.id(), "");
+	EXPECT_EQ(cs.name(), "Championship");
+	EXPECT_EQ(cs.country(), "GB");
+
+	auto removed = cs.remove();
+	EXPECT_EQ(removed, true);
+
+	EXPECT_EQ(cs.id(), "");
+	EXPECT_EQ(cs.name(), "");
+	EXPECT_EQ(cs.country(), "");
+
 }
 

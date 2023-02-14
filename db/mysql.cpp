@@ -83,6 +83,10 @@ namespace mysql
 
 	auto table::start(const std::string& field_name, const std::string& value) -> bool
 	{		
+		if (value.empty()) {
+			return false;
+		}
+
 		std::string stmt = fmt::format("SELECT {} FROM {} WHERE {} = '{}' LIMIT 1;", fields(), tablename, field_name, value);
 		
 		if (select(stmt)) {
@@ -96,7 +100,10 @@ namespace mysql
 
 	auto table::get(const std::string& field_name) const -> std::string
 	{
-		return fields_values.at(field_name);
+		if (auto search = fields_values.find(field_name); search != fields_values.end()) {
+			return search->second;
+		}
+		return {};
 	}
 
 	void table::set(const std::string& field_name, const std::string& value)
@@ -118,6 +125,20 @@ namespace mysql
 		}
 
 		return false;
+	}
+
+	auto table::remove() -> bool
+	{
+		std::string stmt = fmt::format("DELETE FROM {} WHERE {} = '{}';", tablename, key_field, fields_values[key_field]);
+
+		srv.connect();
+		srv.prepare(stmt);
+		srv.execute();
+
+		fields_values.clear();
+		reset();
+
+		return true;
 	}
 
 	auto table::select(const std::string& stmt) -> bool
