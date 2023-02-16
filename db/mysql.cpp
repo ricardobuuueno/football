@@ -1,10 +1,8 @@
 #include "mysql.hpp"
 
 #include <cppconn/driver.h>
-#include <fmt/core.h>
 #include <optional>
 
-#include "../plog/Log.h"
 #include "../util/toml.hpp"
 
 namespace mysql

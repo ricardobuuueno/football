@@ -24,10 +24,35 @@ namespace football
 
 		club() : club("") {}
 
+		club(const football::club& other)
+			: table("clubs", "name")
+		{
+			_id = other.id();
+			_name = other.name();
+		}
+
+		club& operator=(football::club&& other)
+		{
+			_id = std::move(other._id);
+			_name = std::move(other._name);
+			_players = std::move(other._players);
+			return *this;
+		}
+
+		bool operator==(const club& other) const
+    	{
+			return (_name == other.name());
+		}
+
 		std::string id() const { return _id; }
 		std::string name() const { return _name; }
 
 		void name(const std::string& club_name) { _name = club_name; }
+
+		bool empty() override
+		{
+			return (_id.empty() && _name.empty() && _players.empty());
+		}
 
 	private:
 		std::string _id;

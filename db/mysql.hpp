@@ -1,6 +1,9 @@
 #pragma once
 
 #include <map>
+#include <fmt/core.h>
+
+#include "../plog/Log.h"
 
 #include "mysql_connection.h"
 #include <cppconn/driver.h>
@@ -52,12 +55,17 @@ namespace mysql
 		table(const std::string& name, const std::string& field)
 			: tablename(name), key_field(field) 
 		{
+			PLOG_DEBUG << fmt::format("[DB] Table {} [C]onstructor.", tablename);
 		}
 
-		virtual ~table() {}
+		virtual ~table() {
+			PLOG_DEBUG << fmt::format("[DB] Table {} [D]estructor.", tablename);
+		}
 
 		[[nodiscard]] auto save() -> bool;
 		[[nodiscard]] auto remove() -> bool;
+
+		virtual bool empty() = 0;
 
 	protected:
 
