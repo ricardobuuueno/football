@@ -62,11 +62,15 @@ TEST(Championships, start_new_season)
 	const char CLUB_COUNT{20};
 	const std::string YEAR{"2023/2024"};
 
+	PLOG_DEBUG << "[TEST] Creating championship";
+
 	football::championship championship{ "Championship", "GB" };
 	bool saved = championship.save();
 	EXPECT_EQ(saved, true);	
 	EXPECT_NE(championship.id(), "");	
 	
+	PLOG_DEBUG << "[TEST] Creating the season";
+
 	football::season season{ championship, YEAR};
 	EXPECT_EQ(season.id(), "");
 	saved = season.save();
@@ -78,6 +82,8 @@ TEST(Championships, start_new_season)
 	std::vector<football::club> clubs{};
 	clubs.reserve(CLUB_COUNT);
 
+	PLOG_DEBUG << "[TEST] Creating the list of clubs";
+
 	for (char i{0}; i < CLUB_COUNT; ++i) 
 	{
 		std::string club_name{(char)('A' + i)};
@@ -87,6 +93,8 @@ TEST(Championships, start_new_season)
 		EXPECT_EQ(saved, true);	
 		clubs.push_back(club);
 	}
+	
+	PLOG_DEBUG << "[TEST] Adding clubs to the season object";
 
 	EXPECT_EQ(clubs.size(), CLUB_COUNT);
 	for (auto const& club : clubs) {
@@ -96,6 +104,8 @@ TEST(Championships, start_new_season)
 
 	EXPECT_EQ(clubs.size(), CLUB_COUNT);
 	EXPECT_EQ(season.club_count(), CLUB_COUNT);
+
+	PLOG_DEBUG << "[TEST] Removing clubs from the season object";
 
 	bool removed{};
 	for (char i{CLUB_COUNT - 1}; i >= 0; --i) 

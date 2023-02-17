@@ -53,6 +53,8 @@ namespace mysql
 	{
 	public:
 		table(const std::string name, const std::string field1, const std::string field2 = "");
+		table(const table& other);
+		table(table&& other);
 		
 		virtual ~table();
 

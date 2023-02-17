@@ -25,14 +25,14 @@ namespace football
 		club() : club("") {}
 
 		club(const football::club& other)
-			: table("clubs", "name")
+			: table(other)
 		{
 			_id = other.id();
 			_name = other.name();
 		}
 
 		club(football::club&& other)
-			: table("clubs", "name")
+			: table(other)
 		{
 			_id = std::move(other._id);
 			_name = std::move(other._name);

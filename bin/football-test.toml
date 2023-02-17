@@ -8,5 +8,5 @@ password = "dev@123"
 [log]
 file = "football-test.log"
 severity = 5
-maxFileSize = 5000
+maxFileSize = 500000
 maxFiles = 3

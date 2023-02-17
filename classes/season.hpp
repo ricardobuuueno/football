@@ -28,7 +28,7 @@ namespace football
 		std::string year() const { return _year; }
 		const football::championship& championship() const { return _championship; }
 
-		void add_club(football::club club) { _clubs.push_back(club); }
+		void add_club(const football::club& club) { _clubs.push_back(club); }
 		const football::club& club_at(std::size_t index) const { return _clubs.at(index); }
 		std::size_t club_count() { return _clubs.size(); }
 		void remove_club(football::club club) { if (auto it = std::find(_clubs.begin(), _clubs.end(), club); it != _clubs.end()) { _clubs.erase(it); } }

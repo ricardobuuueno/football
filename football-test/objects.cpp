@@ -63,4 +63,8 @@ TEST(Objects, club)
     EXPECT_EQ(club5.id(), club3.id());
     EXPECT_EQ(club5.id(), club4.id());
 
+    auto removed = club5.remove();
+    EXPECT_EQ(removed, true);
+    EXPECT_EQ(club5.empty(), true);
+
 }

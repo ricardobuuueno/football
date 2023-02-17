@@ -86,6 +86,18 @@ namespace mysql
 		PLOG_DEBUG << to_string();
 	}
 
+	table::table(const table& other)
+		: tablename(other.tablename), key_field1(other.key_field1), key_field2(other.key_field2), fields_values(other.fields_values)
+	{
+		PLOG_DEBUG << to_string();
+	}
+
+	table::table(table&& other)
+		: tablename(std::move(other.tablename)), key_field1(std::move(other.key_field1)), key_field2(std::move(other.key_field2)), fields_values(std::move(other.fields_values))
+	{
+		PLOG_DEBUG << to_string();
+	}
+
 	table::~table() {
 		PLOG_DEBUG << to_string();
 	}
@@ -113,6 +125,7 @@ namespace mysql
 	auto table::remove() -> bool
 	{
 		std::string stmt = fmt::format("DELETE FROM {} WHERE {};", tablename, key_and_values());
+		PLOG_DEBUG << stmt;
 
 		srv.connect();
 		srv.prepare(stmt);
