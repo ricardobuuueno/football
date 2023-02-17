@@ -52,24 +52,23 @@ namespace mysql
 	class table
 	{
 	public:
-		table(const std::string& name, const std::string& field)
-			: tablename(name), key_field(field) 
-		{
-			PLOG_DEBUG << fmt::format("[DB] Table {} [C]onstructor.", tablename);
-		}
+		table(const std::string name, const std::string field1, const std::string field2 = "");
+		
+		virtual ~table();
 
-		virtual ~table() {
-			PLOG_DEBUG << fmt::format("[DB] Table {} [D]estructor.", tablename);
-		}
+		auto operator<<(std::ostream& o) -> std::ostream&;
 
 		[[nodiscard]] auto save() -> bool;
 		[[nodiscard]] auto remove() -> bool;
 
-		virtual bool empty() = 0;
+		[[nodiscard]] auto sql_count() const -> int;
+
+		virtual auto empty() -> bool = 0;
+		virtual auto to_string() -> std::string;
 
 	protected:
 
-		auto start(const std::string& field_name, const std::string& value) -> bool;
+		auto start(const std::string& field1, const std::string& value1,const std::string& field2 = "", const std::string& value2 = "") -> bool;
 
 		auto get(const std::string& field_name) const -> std::string;
 
@@ -80,13 +79,17 @@ namespace mysql
 
 	private:
 		const std::string tablename;
-		const std::string key_field;
+		const std::string key_field1;
+		const std::string key_field2;
 		std::map<std::string, std::string> fields_values{};
+
+		int _sql_count{};
 
 		server srv{};
 
 		auto fields() const -> std::string;
 		auto values() const -> std::string;
+		auto key_and_values() -> std::string;
 
 		auto select(const std::string& stmt) -> bool;
 		auto insert() -> bool;

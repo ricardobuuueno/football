@@ -1,10 +1,5 @@
 #include "pch.h"
 
-#include "../globals.hpp"
-#include "../classes/championship.hpp"
-#include "../classes/club.hpp"
-#include "../classes/season.hpp"
-
 class FootballEnvironment : public ::testing::Environment {
 	public:
 		FootballEnvironment(const std::string& conf_file) 
@@ -90,6 +85,7 @@ TEST(Championships, start_new_season)
 		EXPECT_EQ(club.id(), "");	
 		saved = club.save();
 		EXPECT_EQ(saved, true);	
+		clubs.push_back(club);
 	}
 
 	EXPECT_EQ(clubs.size(), CLUB_COUNT);
@@ -102,7 +98,7 @@ TEST(Championships, start_new_season)
 	EXPECT_EQ(season.club_count(), CLUB_COUNT);
 
 	bool removed{};
-	for (char i{CLUB_COUNT}; i >= 0; --i) 
+	for (char i{CLUB_COUNT - 1}; i >= 0; --i) 
 	{
 		football::club club = season.club_at(i);
 		

@@ -13,9 +13,9 @@ namespace football
 	{
 	public:
 		season(const championship& championship, const std::string& year) 
-			: table("seasons", "name"), _id(""), _championship(championship), _year(year), _clubs{}
+			: table("seasons", "championship", "year"), _id(""), _championship(championship), _year(year), _clubs{}
 		{
-			if (start("championship", _championship.id()))
+			if (start("championship", _championship.id(), "year", _year))
 			{
 				_id = get("id");
 				_year = get("year");

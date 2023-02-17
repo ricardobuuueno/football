@@ -31,6 +31,14 @@ namespace football
 			_name = other.name();
 		}
 
+		club(football::club&& other)
+			: table("clubs", "name")
+		{
+			_id = std::move(other._id);
+			_name = std::move(other._name);
+			_players = std::move(other._players);
+		}
+
 		club& operator=(football::club&& other)
 		{
 			_id = std::move(other._id);

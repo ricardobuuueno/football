@@ -79,19 +79,84 @@ namespace mysql
 
 //TABLE ----------------------------------------------------------------------------------------
 
-	auto table::start(const std::string& field_name, const std::string& value) -> bool
+	//public
+	table::table(const std::string name, const std::string field1, const std::string field2)
+		: tablename(std::move(name)), key_field1(std::move(field1)), key_field2(std::move(field2))
+	{
+		PLOG_DEBUG << to_string();
+	}
+
+	table::~table() {
+		PLOG_DEBUG << to_string();
+	}
+
+	auto table::operator<<(std::ostream& o) -> std::ostream&
+	{
+		return o << to_string();
+	}
+
+	auto table::save() -> bool
+	{
+		populate();
+
+		if (insert()) {
+			if (reload()) {
+				reset();
+				PLOG_DEBUG << to_string();
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	auto table::remove() -> bool
+	{
+		std::string stmt = fmt::format("DELETE FROM {} WHERE {};", tablename, key_and_values());
+
+		srv.connect();
+		srv.prepare(stmt);
+		srv.execute();
+		++_sql_count;
+
+		fields_values.clear();
+		reset();
+
+		return true;
+	}
+
+	auto table::sql_count() const -> int
+	{
+		return _sql_count;
+	}
+
+	auto table::to_string() -> std::string
+	{
+		std::string str{};
+		for (auto const& [field, value] : fields_values) {
+			str += (field + ": " + value + " ");
+		}
+		return fmt::format("[tablename: {}, key1: {}, key 2: {} fields: ({})]", tablename, key_field1, key_field2, str);
+	}
+
+	//protected
+	auto table::start(const std::string& field1, const std::string& value1, const std::string& field2, const std::string& value2) -> bool
 	{		
-		if (value.empty()) {
+		if (value1.empty()) {
 			return false;
 		}
 
-		std::string stmt = fmt::format("SELECT {} FROM {} WHERE {} = '{}' LIMIT 1;", fields(), tablename, field_name, value);
+		std::string stmt = fmt::format("SELECT {} FROM {} WHERE {} LIMIT 1;", fields(), tablename, key_and_values());
 		
 		if (select(stmt)) {
 			return true;
 		}
 		
-		set(field_name, value);
+		set(field1, value1);
+
+		if (!value2.empty()) {
+			set(field2, value2);
+		}
 
 		return false;
 	}
@@ -111,34 +176,7 @@ namespace mysql
 		}
 	}
 
-	auto table::save() -> bool
-	{
-		populate();
-
-		if (insert()) {
-			if (reload()) {
-				reset();
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	auto table::remove() -> bool
-	{
-		std::string stmt = fmt::format("DELETE FROM {} WHERE {} = '{}';", tablename, key_field, fields_values[key_field]);
-
-		srv.connect();
-		srv.prepare(stmt);
-		srv.execute();
-
-		fields_values.clear();
-		reset();
-
-		return true;
-	}
-
+	//private
 	auto table::select(const std::string& stmt) -> bool
 	{
 		PLOG_DEBUG << stmt;
@@ -146,6 +184,7 @@ namespace mysql
 		srv.connect();
 		srv.prepare(stmt);
 		srv.execute();
+		++_sql_count;
 
 		if (srv.has_rows())
 		{
@@ -164,13 +203,14 @@ namespace mysql
 		srv.connect();
 		srv.prepare(stmt);
 		srv.execute();
+		++_sql_count;
 
 		return true;
 	}
 
 	auto table::reload() -> bool
 	{
-		std::string stmt = fmt::format("SELECT * FROM {} WHERE {} = '{}' LIMIT 1;", tablename, key_field, fields_values[key_field]);
+		std::string stmt = fmt::format("SELECT * FROM {} WHERE {} LIMIT 1;", tablename, key_and_values());;
 		return select(stmt);
 	}
 
@@ -207,5 +247,15 @@ namespace mysql
 
 		return result;
 	}
+
+	auto table::key_and_values() -> std::string
+	{
+		std::string stmt = fmt::format("{} = '{}'", key_field1, fields_values[key_field1]);
+		if (!key_field2.empty()) {
+			stmt += fmt::format(" AND {} = '{}'", key_field2, fields_values[key_field2]);
+		}
+		return stmt;
+	}
+
 
 }
