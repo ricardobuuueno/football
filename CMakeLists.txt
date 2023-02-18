@@ -62,6 +62,7 @@ enable_testing()
 add_executable(
   football-test
   football-test/test.cpp
+  football-test/pch.cpp
   football-test/objects.cpp
   globals.cpp
 )

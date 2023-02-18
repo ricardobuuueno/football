@@ -2,6 +2,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_library(classes
 championship.hpp
+club_season.hpp
 club.hpp
 game.hpp
 goal.hpp
