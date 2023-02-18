@@ -159,12 +159,17 @@ namespace mysql
 			return false;
 		}
 
-		std::string stmt = fmt::format("SELECT {} FROM {} WHERE {} LIMIT 1;", fields(), tablename, key_and_values());
+		std::string second_condition{};
+		if (!value2.empty()) {
+			second_condition = fmt::format("AND {} = '{}'", field2, value2);
+		}
+
+		std::string stmt = fmt::format("SELECT {} FROM {} WHERE {} = '{}' {} LIMIT 1;", fields(), tablename, field1, value1, second_condition);
 		
 		if (select(stmt)) {
 			return true;
 		}
-		
+
 		set(field1, value1);
 
 		if (!value2.empty()) {

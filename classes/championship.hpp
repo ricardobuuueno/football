@@ -20,6 +20,8 @@ namespace football
 			}
 		}
 
+		championship() : championship("") {}
+
 		championship(const std::string& id) 
 			: table("championships", "name"), _id(id), _name(""), _country("")
 		{
@@ -30,10 +32,8 @@ namespace football
 			}
 		}
 
-		championship() : championship("") {}
-
 		championship(const championship& other)
-			: table("championships", "name")
+			: table(other)
 		{
 			_id = other.id();
 			_name = other.name();

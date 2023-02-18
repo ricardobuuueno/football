@@ -12,7 +12,7 @@ namespace football
 	class season final: public mysql::table
 	{
 	public:
-		season(const championship& championship, const std::string& year) 
+		season(championship& championship, const std::string& year) 
 			: table("seasons", "championship", "year"), _id(""), _championship(championship), _year(year), _clubs{}
 		{
 			if (start("championship", _championship.id(), "year", _year))
@@ -22,17 +22,14 @@ namespace football
 			}
 		}
 
-		season() : season({},"") {}
-
 		std::string id() const { return _id; }
 		std::string year() const { return _year; }
-		const football::championship& championship() const { return _championship; }
+		const championship& championshp() const { return _championship; }
 
-		void add_club(const football::club& club) { _clubs.push_back(club); }
-		const football::club& club_at(std::size_t index) const { return _clubs.at(index); }
+		void add_club(pclub& club) { _clubs.push_back(std::move(club)); }
+		const football::pclub& club_at(std::size_t index) const { return _clubs.at(index); }
 		std::size_t club_count() { return _clubs.size(); }
-		void remove_club(football::club club) { if (auto it = std::find(_clubs.begin(), _clubs.end(), club); it != _clubs.end()) { _clubs.erase(it); } }
-		//void remove_club(football::club club) {}
+		void remove_club(pclub club) { if (auto it = std::find(_clubs.begin(), _clubs.end(), club); it != _clubs.end()) { _clubs.erase(it); } }
 
 		bool empty() override
 		{
@@ -41,9 +38,9 @@ namespace football
 
 	private:
 		std::string _id;
-		football::championship _championship;
+		football::championship& _championship;
 		std::string _year;
-		std::vector<club> _clubs;
+		std::vector<pclub> _clubs;
 
 		void populate() override
 		{
@@ -56,9 +53,6 @@ namespace football
 		{
 			_id = get("id");
 			_year = get("year");
-
-			football::championship cs(get("championship"));
-			_championship = cs;
 		}		
 
 	};

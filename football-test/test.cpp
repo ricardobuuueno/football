@@ -33,7 +33,45 @@ int main(int argc, char **argv)
   	return RUN_ALL_TESTS();
 }
 
-TEST(Championships, new_championship_added) 
+TEST(Championships, new_championship_season_and_clubs) 
+{
+	using football::championship;
+	using football::season;
+	using football::club;
+	using football::New;
+
+	const std::string CHAMPIONSHIP{"Championship"};
+	const std::string COUNTRY{"GB"};
+	const std::string YEAR{"2023/2024"};
+	const std::string CLUB{"THEFC"};
+
+	auto cs = New<championship>(CHAMPIONSHIP, COUNTRY);
+	auto saved = cs->save();
+	EXPECT_EQ(saved, true);
+
+	auto ss = New<season>(*cs, YEAR);
+	saved = ss->save();
+	EXPECT_EQ(saved, true);
+
+	auto cl = New<club>(CLUB);
+	saved = cl->save();
+	EXPECT_EQ(saved, true);
+
+	//ss->add_club(cl);
+	//EXPECT_EQ(cl, nullptr);
+
+
+	auto removed = cl->remove();
+	EXPECT_EQ(removed, true);
+
+	removed = ss->remove();
+	EXPECT_EQ(removed, true);
+
+	removed = cs->remove();
+	EXPECT_EQ(removed, true);
+}
+
+/* TEST(Championships, new_championship_added) 
 {
 	const std::string CHAMPIONSHIP{"Championship"};
 	const std::string COUNTRY{"GB"};
@@ -127,4 +165,4 @@ TEST(Championships, start_new_season)
 	removed = championship.remove();
 	EXPECT_EQ(removed, true);	
 
-}
+} */

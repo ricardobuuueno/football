@@ -81,4 +81,6 @@ namespace football
 
 	};
 
+	using pclub = std::unique_ptr<club>;
+
 }
