@@ -1,0 +1,17 @@
+{
+    "cmake.generator": "Unix Makefiles",
+    "clang-format.executable": "/usr/bin/clang-format-15",
+    "clang-format.style": "Microsoft",
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    },
+    "editor.formatOnSaveMode": "file",
+    "editor.tabSize": 4,
+    "clang-format.language.cpp.enable": true,
+    "[cpp]": {
+        "editor.defaultFormatter": "xaver.clang-format",
+        "editor.wordBasedSuggestions": false,
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true
+    }
+}

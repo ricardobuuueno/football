@@ -1,7 +1,6 @@
 .vs/
 x64/
 build/
-.vscode/
 bin/football
 bin/football-test
 bin/*.log

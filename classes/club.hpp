@@ -33,6 +33,7 @@ class club final : public mysql::table
     club(football::club &&other) : table(other)
     {
         _id = std::move(other._id);
+
         _name = std::move(other._name);
         _players = std::move(other._players);
     }
