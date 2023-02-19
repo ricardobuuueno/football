@@ -58,7 +58,7 @@ TEST(Championships, new_championship_season_and_clubs)
     saved = ss->save();
     EXPECT_EQ(saved, true);
 
-    auto cl = New<club>(CLUB);
+    auto cl = New<club>(CLUB, COUNTRY);
     saved = cl->save();
     EXPECT_EQ(saved, true);
 
