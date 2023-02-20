@@ -91,9 +91,16 @@ class season final : public mysql::table
     virtual auto start_related() -> void override
     {
         club_season cs{_id};
+        std::vector<std::string> ids{};
+
         while (cs.next())
         {
             auto club_id = cs.get_value("club");
+            ids.push_back(club_id);
+        }
+
+        for (auto const &club_id : ids)
+        {
             _clubs.emplace_back(club_id);
         }
     }

@@ -14,6 +14,14 @@
 namespace mysql
 {
 
+struct environment;
+class server;
+
+extern std::unique_ptr<environment> env;
+extern std::unique_ptr<server> srv;
+
+auto init(const std::string &config_filename) -> void;
+
 struct environment final
 {
     std::string server;
@@ -22,10 +30,6 @@ struct environment final
     std::string password;
     std::string database;
 };
-
-extern std::unique_ptr<environment> env;
-
-auto init(const std::string &config_filename) -> void;
 
 class server final
 {
@@ -105,8 +109,6 @@ class table
     std::map<std::string, std::string> fields_values{};
 
     int _sql_count{};
-
-    server srv{};
 
     [[nodiscard]] auto fields() const -> std::string;
     [[nodiscard]] auto values() const -> std::string;

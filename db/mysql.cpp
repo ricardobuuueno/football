@@ -8,6 +8,7 @@
 namespace mysql
 {
 std::unique_ptr<environment> env = nullptr;
+std::unique_ptr<server> srv = nullptr;
 
 auto init(const std::string &config_filename) -> void
 {
@@ -21,6 +22,8 @@ auto init(const std::string &config_filename) -> void
     env->username = my_config["username"].value<std::string>().value();
     env->password = my_config["password"].value<std::string>().value();
     env->database = my_config["database"].value<std::string>().value();
+
+    srv = std::make_unique<server>();
 }
 
 // SERVER
@@ -177,9 +180,9 @@ auto table::remove() -> bool
     std::string stmt = fmt::format("DELETE FROM {} WHERE {};", tablename, key_and_values());
     PLOG_DEBUG << stmt;
 
-    srv.connect();
-    srv.prepare(stmt);
-    srv.execute();
+    srv->connect();
+    srv->prepare(stmt);
+    srv->execute();
     ++_sql_count;
 
     fields_values.clear();
@@ -205,12 +208,12 @@ auto table::to_string() -> std::string
 
 auto table::next() const -> bool
 {
-    return srv.next();
+    return srv->next();
 }
 
 auto table::get_value(const std::string &field) const -> std::string
 {
-    return srv.get_value(field);
+    return srv->get_value(field);
 }
 
 // protected
@@ -286,14 +289,14 @@ auto table::select(const std::string &stmt) -> bool
 {
     PLOG_DEBUG << stmt;
 
-    srv.connect();
-    srv.prepare(stmt);
-    srv.execute();
+    srv->connect();
+    srv->prepare(stmt);
+    srv->execute();
     ++_sql_count;
 
-    if (srv.has_rows())
+    if (srv->has_rows())
     {
-        srv.get_values(fields_values);
+        srv->get_values(fields_values);
         return true;
     }
 
@@ -304,12 +307,12 @@ auto table::select_list(const std::string &stmt) -> bool
 {
     PLOG_DEBUG << stmt;
 
-    srv.connect();
-    srv.prepare(stmt);
-    srv.execute();
+    srv->connect();
+    srv->prepare(stmt);
+    srv->execute();
     ++_sql_count;
 
-    return srv.has_rows();
+    return srv->has_rows();
 }
 
 auto table::insert() -> bool
@@ -317,9 +320,9 @@ auto table::insert() -> bool
     std::string stmt = fmt::format("REPLACE INTO {} ({}) VALUES ({});", tablename, fields(), values());
     PLOG_DEBUG << stmt;
 
-    srv.connect();
-    srv.prepare(stmt);
-    srv.execute();
+    srv->connect();
+    srv->prepare(stmt);
+    srv->execute();
     ++_sql_count;
 
     return true;
