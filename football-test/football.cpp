@@ -79,14 +79,14 @@ TEST(Championships, new_championship_season_and_club)
     EXPECT_EQ(cl2.name(), CLUB);
     EXPECT_EQ(cl2.country(), COUNTRY);
 
-    ss2->remove_club(cl2);
+    auto removed = ss2->remove_club(cl2);
     EXPECT_EQ(ss2->club_count(), 0);
 
     saved = ss2->save();
     EXPECT_EQ(saved, true);
     EXPECT_EQ(ss2->club_count(), 0);
 
-    auto removed = cl->remove();
+    removed = cl->remove();
     EXPECT_EQ(removed, true);
 
     removed = ss->remove();
@@ -185,7 +185,8 @@ TEST(Championships, start_new_season)
         auto cl = ss->club_at(i);
 
         EXPECT_NE(cl.id(), "");
-        ss->remove_club(cl);
+        removed = ss->remove_club(cl);
+        EXPECT_EQ(removed, true);
 
         removed = cl.remove();
         EXPECT_EQ(removed, true);
@@ -194,6 +195,67 @@ TEST(Championships, start_new_season)
     EXPECT_EQ(ss->club_count(), 0);
 
     removed = ss->remove();
+    EXPECT_EQ(removed, true);
+
+    removed = cs->remove();
+    EXPECT_EQ(removed, true);
+}
+
+TEST(Championships, change_season_data_and_clubs)
+{
+    using football::championship;
+    using football::club;
+    using football::New;
+    using football::season;
+
+    auto cs = New<championship>("National Championship", "GB");
+    auto saved = cs->save();
+    EXPECT_EQ(saved, true);
+
+    auto ss = New<season>(cs, "2025");
+    saved = ss->save();
+    EXPECT_EQ(saved, true);
+
+    auto cl1 = New<club>("CLUB1", "GB");
+    saved = cl1->save();
+    EXPECT_EQ(saved, true);
+
+    auto cl2 = New<club>("CLUB2", "GB");
+    saved = cl2->save();
+    EXPECT_EQ(saved, true);
+
+    auto cl3 = New<club>("CLUB3", "GB");
+    saved = cl3->save();
+    EXPECT_EQ(saved, true);
+
+    ss->add_club(cl1);
+    ss->add_club(cl2);
+    ss->add_club(cl3);
+
+    saved = ss->save();
+    EXPECT_EQ(saved, true);
+    EXPECT_EQ(ss->club_count(), 3);
+
+    auto reload_season = New<season>(cs, "2025");
+    EXPECT_EQ(reload_season->club_count(), 3);
+
+    bool removed = reload_season->remove_club(*cl2);
+    EXPECT_EQ(removed, true);
+    saved = reload_season->save();
+
+    reload_season = New<season>(cs, "2025");
+    EXPECT_EQ(reload_season->club_count(), 2);
+
+    removed = reload_season->remove();
+    EXPECT_EQ(removed, true);
+
+    removed = cl3->remove();
+    EXPECT_EQ(removed, true);
+
+    removed = cl2->remove();
+    EXPECT_EQ(removed, true);
+
+    removed = cl1->remove();
     EXPECT_EQ(removed, true);
 
     removed = cs->remove();

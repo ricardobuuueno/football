@@ -54,12 +54,14 @@ class season final : public mysql::table
     {
         return _clubs.size();
     }
-    void remove_club(const club &club)
+    [[nodiscard]] bool remove_club(const club &club)
     {
         if (auto it = std::find(_clubs.begin(), _clubs.end(), club); it != _clubs.end())
         {
             _clubs.erase(it);
+            return true;
         }
+        return false;
     }
 
     bool empty() override

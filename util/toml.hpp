@@ -41,6 +41,8 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 //----------------------------------------------------------------------------------------------------------------------
+#pragma clang system_header
+
 #ifndef TOMLPLUSPLUS_H
 #define TOMLPLUSPLUS_H
 

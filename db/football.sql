@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
--- Host:                         localhost
--- Server version:               8.0.32 - MySQL Community Server - GPL
--- Server OS:                    Win64
+-- Host:                         192.168.0.104
+-- Server version:               8.0.32-0ubuntu0.22.04.2 - (Ubuntu)
+-- Server OS:                    Linux
 -- HeidiSQL Version:             12.3.0.6589
 -- --------------------------------------------------------
 
@@ -16,28 +16,60 @@
 
 
 -- Dumping database structure for football
+DROP DATABASE IF EXISTS `football`;
 CREATE DATABASE IF NOT EXISTS `football` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `football`;
+
+-- Dumping structure for table football.championships
+DROP TABLE IF EXISTS `championships`;
+CREATE TABLE IF NOT EXISTS `championships` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `country` char(2) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`),
+  KEY `f_country` (`country`),
+  CONSTRAINT `f_country` FOREIGN KEY (`country`) REFERENCES `countries` (`country_code`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=138 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table football.championships: ~0 rows (approximately)
+DELETE FROM `championships`;
 
 -- Dumping structure for table football.clubs
 DROP TABLE IF EXISTS `clubs`;
 CREATE TABLE IF NOT EXISTS `clubs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL DEFAULT '',
+  `country` char(2) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  UNIQUE KEY `name` (`name`),
+  KEY `country` (`country`)
+) ENGINE=InnoDB AUTO_INCREMENT=934 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table football.clubs: ~0 rows (approximately)
 DELETE FROM `clubs`;
+
+-- Dumping structure for table football.clubs_seasons
+DROP TABLE IF EXISTS `clubs_seasons`;
+CREATE TABLE IF NOT EXISTS `clubs_seasons` (
+  `season` int unsigned NOT NULL,
+  `club` int unsigned NOT NULL,
+  UNIQUE KEY `season` (`season`,`club`),
+  KEY `f_club` (`club`),
+  CONSTRAINT `f_club` FOREIGN KEY (`club`) REFERENCES `clubs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `f_season` FOREIGN KEY (`season`) REFERENCES `seasons` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table football.clubs_seasons: ~0 rows (approximately)
+DELETE FROM `clubs_seasons`;
 
 -- Dumping structure for table football.countries
 DROP TABLE IF EXISTS `countries`;
 CREATE TABLE IF NOT EXISTS `countries` (
   `id` int NOT NULL AUTO_INCREMENT,
   `phone_code` int NOT NULL,
-  `country_code` char(2) NOT NULL,
-  `country_name` varchar(80) NOT NULL,
+  `country_code` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `country_name` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `country_code` (`country_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb3;
@@ -297,6 +329,20 @@ INSERT INTO `countries` (`id`, `phone_code`, `country_code`, `country_name`) VAL
 	(250, 967, 'YE', 'Yemen'),
 	(251, 260, 'ZM', 'Zambia'),
 	(252, 263, 'ZW', 'Zimbabwe');
+
+-- Dumping structure for table football.seasons
+DROP TABLE IF EXISTS `seasons`;
+CREATE TABLE IF NOT EXISTS `seasons` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `championship` int unsigned NOT NULL,
+  `year` char(10) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `championship` (`championship`,`year`),
+  CONSTRAINT `k_championship` FOREIGN KEY (`championship`) REFERENCES `championships` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Dumping data for table football.seasons: ~0 rows (approximately)
+DELETE FROM `seasons`;
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

@@ -56,6 +56,30 @@ void server::execute()
     result = pstmt->executeQuery();
 }
 
+auto server::start_transaction() -> void
+{
+    if (connection)
+    {
+        savepoint = connection->setSavepoint();
+    }
+}
+
+auto server::commit() -> void
+{
+    if (connection)
+    {
+        connection->commit();
+    }
+}
+
+auto server::rollback() -> void
+{
+    if (connection)
+    {
+        connection->rollback(savepoint);
+    }
+}
+
 auto server::next() const -> bool
 {
     return (result != nullptr && result->next());
@@ -80,7 +104,7 @@ auto server::has_rows() const -> bool
     return (result != nullptr && result->rowsCount() > 0);
 }
 
-void server::get_values(std::map<std::string, std::string> &field_values) const
+auto server::get_values(std::map<std::string, std::string> &field_values) const -> void
 {
     auto meta = result->getMetaData();
     PLOG_DEBUG << "Column count: " << meta->getColumnCount();

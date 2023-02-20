@@ -1,149 +1,145 @@
 #pragma once
+#pragma clang system_header
+
 #include "../Appenders/IAppender.h"
-#include "../Converters/UTF8Converter.h"
 #include "../Converters/NativeEOLConverter.h"
+#include "../Converters/UTF8Converter.h"
 #include "../Util.h"
 #include <algorithm>
 
 namespace plog
 {
-    template<class Formatter, class Converter = NativeEOLConverter<UTF8Converter> >
-    class PLOG_LINKAGE_HIDDEN RollingFileAppender : public IAppender
+template <class Formatter, class Converter = NativeEOLConverter<UTF8Converter>>
+class PLOG_LINKAGE_HIDDEN RollingFileAppender : public IAppender
+{
+  public:
+    RollingFileAppender(const util::nchar *fileName, size_t maxFileSize = 0, int maxFiles = 0)
+        : m_fileSize(), m_maxFileSize(), m_maxFiles(maxFiles), m_firstWrite(true)
     {
-    public:
-        RollingFileAppender(const util::nchar* fileName, size_t maxFileSize = 0, int maxFiles = 0)
-            : m_fileSize()
-            , m_maxFileSize()
-            , m_maxFiles(maxFiles)
-            , m_firstWrite(true)
-        {
-            setFileName(fileName);
-            setMaxFileSize(maxFileSize);
-        }
+        setFileName(fileName);
+        setMaxFileSize(maxFileSize);
+    }
 
 #ifdef _WIN32
-        RollingFileAppender(const char* fileName, size_t maxFileSize = 0, int maxFiles = 0)
-            : m_fileSize()
-            , m_maxFileSize()
-            , m_maxFiles(maxFiles)
-            , m_firstWrite(true)
-        {
-            setFileName(fileName);
-            setMaxFileSize(maxFileSize);
-        }
+    RollingFileAppender(const char *fileName, size_t maxFileSize = 0, int maxFiles = 0)
+        : m_fileSize(), m_maxFileSize(), m_maxFiles(maxFiles), m_firstWrite(true)
+    {
+        setFileName(fileName);
+        setMaxFileSize(maxFileSize);
+    }
 #endif
 
-        virtual void write(const Record& record) PLOG_OVERRIDE
+    virtual void write(const Record &record) PLOG_OVERRIDE
+    {
+        util::MutexLock lock(m_mutex);
+
+        if (m_firstWrite)
         {
-            util::MutexLock lock(m_mutex);
+            openLogFile();
+            m_firstWrite = false;
+        }
+        else if (m_maxFiles > 0 && m_fileSize > m_maxFileSize && static_cast<size_t>(-1) != m_fileSize)
+        {
+            rollLogFiles();
+        }
 
-            if (m_firstWrite)
-            {
-                openLogFile();
-                m_firstWrite = false;
-            }
-            else if (m_maxFiles > 0 && m_fileSize > m_maxFileSize && static_cast<size_t>(-1) != m_fileSize)
-            {
-                rollLogFiles();
-            }
+        size_t bytesWritten = m_file.write(Converter::convert(Formatter::format(record)));
 
-            size_t bytesWritten = m_file.write(Converter::convert(Formatter::format(record)));
+        if (static_cast<size_t>(-1) != bytesWritten)
+        {
+            m_fileSize += bytesWritten;
+        }
+    }
+
+    void setFileName(const util::nchar *fileName)
+    {
+        util::MutexLock lock(m_mutex);
+
+        util::splitFileName(fileName, m_fileNameNoExt, m_fileExt);
+
+        m_file.close();
+        m_firstWrite = true;
+    }
+
+#ifdef _WIN32
+    void setFileName(const char *fileName)
+    {
+        setFileName(util::toWide(fileName).c_str());
+    }
+#endif
+
+    void setMaxFiles(int maxFiles)
+    {
+        m_maxFiles = maxFiles;
+    }
+
+    void setMaxFileSize(size_t maxFileSize)
+    {
+        m_maxFileSize = (std::max)(maxFileSize, static_cast<size_t>(1000)); // set a lower limit for the maxFileSize
+    }
+
+    void rollLogFiles()
+    {
+        m_file.close();
+
+        util::nstring lastFileName = buildFileName(m_maxFiles - 1);
+        util::File::unlink(lastFileName.c_str());
+
+        for (int fileNumber = m_maxFiles - 2; fileNumber >= 0; --fileNumber)
+        {
+            util::nstring currentFileName = buildFileName(fileNumber);
+            util::nstring nextFileName = buildFileName(fileNumber + 1);
+
+            util::File::rename(currentFileName.c_str(), nextFileName.c_str());
+        }
+
+        openLogFile();
+        m_firstWrite = false;
+    }
+
+  private:
+    void openLogFile()
+    {
+        util::nstring fileName = buildFileName();
+        m_fileSize = m_file.open(fileName.c_str());
+
+        if (0 == m_fileSize)
+        {
+            size_t bytesWritten = m_file.write(Converter::header(Formatter::header()));
 
             if (static_cast<size_t>(-1) != bytesWritten)
             {
                 m_fileSize += bytesWritten;
             }
         }
+    }
 
-        void setFileName(const util::nchar* fileName)
+    util::nstring buildFileName(int fileNumber = 0)
+    {
+        util::nostringstream ss;
+        ss << m_fileNameNoExt;
+
+        if (fileNumber > 0)
         {
-            util::MutexLock lock(m_mutex);
-
-            util::splitFileName(fileName, m_fileNameNoExt, m_fileExt);
-
-            m_file.close();
-            m_firstWrite = true;
+            ss << '.' << fileNumber;
         }
 
-#ifdef _WIN32
-        void setFileName(const char* fileName)
+        if (!m_fileExt.empty())
         {
-            setFileName(util::toWide(fileName).c_str());
-        }
-#endif
-
-        void setMaxFiles(int maxFiles)
-        {
-            m_maxFiles = maxFiles;
+            ss << '.' << m_fileExt;
         }
 
-        void setMaxFileSize(size_t maxFileSize)
-        {
-            m_maxFileSize = (std::max)(maxFileSize, static_cast<size_t>(1000)); // set a lower limit for the maxFileSize
-        }
+        return ss.str();
+    }
 
-        void rollLogFiles()
-        {
-            m_file.close();
-
-            util::nstring lastFileName = buildFileName(m_maxFiles - 1);
-            util::File::unlink(lastFileName.c_str());
-
-            for (int fileNumber = m_maxFiles - 2; fileNumber >= 0; --fileNumber)
-            {
-                util::nstring currentFileName = buildFileName(fileNumber);
-                util::nstring nextFileName = buildFileName(fileNumber + 1);
-
-                util::File::rename(currentFileName.c_str(), nextFileName.c_str());
-            }
-
-            openLogFile();
-            m_firstWrite = false;
-        }
-
-    private:
-        void openLogFile()
-        {
-            util::nstring fileName = buildFileName();
-            m_fileSize = m_file.open(fileName.c_str());
-
-            if (0 == m_fileSize)
-            {
-                size_t bytesWritten = m_file.write(Converter::header(Formatter::header()));
-
-                if (static_cast<size_t>(-1) != bytesWritten)
-                {
-                    m_fileSize += bytesWritten;
-                }
-            }
-        }
-
-        util::nstring buildFileName(int fileNumber = 0)
-        {
-            util::nostringstream ss;
-            ss << m_fileNameNoExt;
-
-            if (fileNumber > 0)
-            {
-                ss << '.' << fileNumber;
-            }
-
-            if (!m_fileExt.empty())
-            {
-                ss << '.' << m_fileExt;
-            }
-
-            return ss.str();
-        }
-
-    private:
-        util::Mutex     m_mutex;
-        util::File      m_file;
-        size_t          m_fileSize;
-        size_t          m_maxFileSize;
-        int             m_maxFiles;
-        util::nstring   m_fileExt;
-        util::nstring   m_fileNameNoExt;
-        bool            m_firstWrite;
-    };
-}
+  private:
+    util::Mutex m_mutex;
+    util::File m_file;
+    size_t m_fileSize;
+    size_t m_maxFileSize;
+    int m_maxFiles;
+    util::nstring m_fileExt;
+    util::nstring m_fileNameNoExt;
+    bool m_firstWrite;
+};
+} // namespace plog

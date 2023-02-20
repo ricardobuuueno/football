@@ -34,10 +34,14 @@ class server final
     void prepare(const std::string &stmt);
     void execute();
 
-    auto next() const -> bool;
-    auto get_value(const std::string &field) const -> std::string;
-    auto has_rows() const -> bool;
-    void get_values(std::map<std::string, std::string> &field_values) const;
+    auto start_transaction() -> void;
+    auto commit() -> void;
+    auto rollback() -> void;
+
+    [[nodiscard]] auto next() const -> bool;
+    [[nodiscard]] auto get_value(const std::string &field) const -> std::string;
+    [[nodiscard]] auto has_rows() const -> bool;
+    auto get_values(std::map<std::string, std::string> &field_values) const -> void;
 
   private:
     sql::Driver *driver{nullptr};
@@ -45,6 +49,7 @@ class server final
     sql::Statement *stmt{nullptr};
     sql::PreparedStatement *pstmt{nullptr};
     sql::ResultSet *result{nullptr};
+    sql::Savepoint *savepoint{nullptr};
 
     static std::string configuration_filename;
 };
@@ -68,8 +73,8 @@ class table
     virtual auto empty() -> bool = 0;
     virtual auto to_string() -> std::string;
 
-    auto next() const -> bool;
-    auto get_value(const std::string &field) const -> std::string;
+    [[nodiscard]] auto next() const -> bool;
+    [[nodiscard]] auto get_value(const std::string &field) const -> std::string;
 
   protected:
     auto start(const std::string &field1, const std::string &value1, const std::string &field2 = "",
@@ -77,7 +82,7 @@ class table
 
     auto start_list(const std::string &field1, const std::string &value1) -> bool;
 
-    auto get(const std::string &field_name) const -> std::string;
+    [[nodiscard]] auto get(const std::string &field_name) const -> std::string;
 
     void set(const std::string &field_name, const std::string &value);
 
@@ -103,8 +108,8 @@ class table
 
     server srv{};
 
-    auto fields() const -> std::string;
-    auto values() const -> std::string;
+    [[nodiscard]] auto fields() const -> std::string;
+    [[nodiscard]] auto values() const -> std::string;
     auto key_and_values() -> std::string;
 
     auto select(const std::string &stmt) -> bool;

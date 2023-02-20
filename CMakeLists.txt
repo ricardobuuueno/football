@@ -14,7 +14,7 @@ add_subdirectory(plog)
 find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRED)
 
 # setup clang-tidy command from executable + options
-set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}" "-checks=-*,modernize-*")
+set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}" "-checks=-*,modernize-*;-header-filter=.*")
 
 add_executable(football 
 football.cpp
@@ -60,7 +60,7 @@ enable_testing()
 
 add_executable(
   football-test
-  football-test/test.cpp
+  football-test/football.cpp
   football-test/pch.cpp
   football-test/objects.cpp
 )

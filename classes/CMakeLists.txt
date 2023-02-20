@@ -16,15 +16,15 @@ team.hpp
 )
 
 # search for clang-tidy
-find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRED)
+#find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRED)
 
 # setup clang-tidy command from executable + options
-set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}" "-checks=*,modernize-*")
+#set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}" "-checks=-*,modernize-*;-header-filter=.*")
 
 # set CXX_CLANG_TIDY property after defining the target
-set_target_properties(classes 
-PROPERTIES 
-CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
+#set_target_properties(classes 
+#PROPERTIES 
+#CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
 
 set_target_properties(classes 
 PROPERTIES 

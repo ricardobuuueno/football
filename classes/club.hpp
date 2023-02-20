@@ -12,8 +12,9 @@ namespace football
 class club final : public mysql::table
 {
   public:
-    club(const std::string &club_name, const std::string &country_code)
-        : table("clubs", "name", "country"), _id(""), _name(club_name), _country(country_code), _players{}
+    club(std::string club_name, std::string country_code)
+        : table("clubs", "name", "country"), _id(""), _name(std::move(club_name)),
+          _country(std::move(country_code)), _players{}
     {
         if (start("name", _name, "country", _country))
         {
@@ -25,7 +26,7 @@ class club final : public mysql::table
     {
     }
 
-    club(const std::string &id) : table("clubs", "name", "country"), _id(id), _name(""), _country(""), _players{}
+    club(std::string id) : table("clubs", "name", "country"), _id(std::move(id)), _name(""), _country(""), _players{}
     {
         if (start("id", _id))
         {
@@ -49,7 +50,7 @@ class club final : public mysql::table
         _players = std::move(other._players);
     }
 
-    club &operator=(football::club &&other)
+    auto operator=(football::club &&other) -> club &
     {
         _id = std::move(other._id);
         _name = std::move(other._name);
@@ -58,20 +59,20 @@ class club final : public mysql::table
         return *this;
     }
 
-    bool operator==(const club &other) const
+    auto operator==(const club &other) const -> bool
     {
         return (_name == other.name() && _country == other.country());
     }
 
-    std::string id() const
+    [[nodiscard]] auto id() const -> std::string
     {
         return _id;
     }
-    std::string name() const
+    [[nodiscard]] auto name() const -> std::string
     {
         return _name;
     }
-    std::string country() const
+    [[nodiscard]] auto country() const -> std::string
     {
         return _country;
     }
@@ -85,7 +86,7 @@ class club final : public mysql::table
         _country = country_code;
     }
 
-    bool empty() override
+    auto empty() -> bool override
     {
         return (_id.empty() && _name.empty() && _country.empty() && _players.empty());
     }
