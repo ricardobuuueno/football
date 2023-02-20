@@ -25,6 +25,15 @@ class club final : public mysql::table
     {
     }
 
+    club(const std::string &id) : table("clubs", "name", "country"), _id(id), _name(""), _country(""), _players{}
+    {
+        if (start("id", _id))
+        {
+            _name = get("name");
+            _country = get("country");
+        }
+    }
+
     club(const football::club &other) : table(other)
     {
         _id = other.id();

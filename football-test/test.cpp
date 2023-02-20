@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     return RUN_ALL_TESTS();
 }
 
-TEST(Championships, new_championship_season_and_clubs)
+TEST(Championships, new_championship_season_and_club)
 {
     using football::championship;
     using football::club;
@@ -54,7 +54,7 @@ TEST(Championships, new_championship_season_and_clubs)
     auto saved = cs->save();
     EXPECT_EQ(saved, true);
 
-    auto ss = New<season>(*cs, YEAR);
+    auto ss = New<season>(cs, YEAR);
     saved = ss->save();
     EXPECT_EQ(saved, true);
 
@@ -66,109 +66,136 @@ TEST(Championships, new_championship_season_and_clubs)
     EXPECT_NE(cl, nullptr);
 
     saved = ss->save();
+    EXPECT_EQ(saved, true);
 
-    /*     auto removed = cl->remove();
-        EXPECT_EQ(removed, true);
+    auto cs2 = New<championship>(CHAMPIONSHIP, COUNTRY);
+    EXPECT_EQ(cs2->id(), cs->id());
 
-        removed = ss->remove();
-        EXPECT_EQ(removed, true);
+    auto ss2 = New<season>(cs, YEAR);
+    EXPECT_EQ(ss2->id(), ss->id());
+    EXPECT_EQ(ss2->club_count(), 1);
 
-        removed = cs->remove();
-        EXPECT_EQ(removed, true); */
+    auto &cl2 = ss2->club_at(0);
+    EXPECT_EQ(cl2.name(), CLUB);
+    EXPECT_EQ(cl2.country(), COUNTRY);
+
+    ss2->remove_club(cl2);
+    EXPECT_EQ(ss2->club_count(), 0);
+
+    saved = ss2->save();
+    EXPECT_EQ(saved, true);
+    EXPECT_EQ(ss2->club_count(), 0);
+
+    auto removed = cl->remove();
+    EXPECT_EQ(removed, true);
+
+    removed = ss->remove();
+    EXPECT_EQ(removed, true);
+
+    removed = cs->remove();
+    EXPECT_EQ(removed, true);
 }
 
-/* TEST(Championships, new_championship_added)
+TEST(Championships, new_championship_added)
 {
-        const std::string CHAMPIONSHIP{"Championship"};
-        const std::string COUNTRY{"GB"};
+    using football::championship;
+    using football::New;
 
-        football::championship cs{ CHAMPIONSHIP, COUNTRY };
-        EXPECT_EQ(cs.id(), "");
+    const std::string CHAMPIONSHIP{"Championship"};
+    const std::string COUNTRY{"GB"};
 
-        auto saved = cs.save();
-        EXPECT_EQ(saved, true);
+    auto cs = New<championship>(CHAMPIONSHIP, COUNTRY);
+    EXPECT_EQ(cs->id(), "");
 
-        EXPECT_NE(cs.id(), "");
-        EXPECT_EQ(cs.name(), CHAMPIONSHIP);
-        EXPECT_EQ(cs.country(), COUNTRY);
+    auto saved = cs->save();
+    EXPECT_EQ(saved, true);
 
-        auto removed = cs.remove();
-        EXPECT_EQ(removed, true);
+    EXPECT_NE(cs->id(), "");
+    EXPECT_EQ(cs->name(), CHAMPIONSHIP);
+    EXPECT_EQ(cs->country(), COUNTRY);
 
-        EXPECT_EQ(cs.id(), "");
-        EXPECT_EQ(cs.name(), "");
-        EXPECT_EQ(cs.country(), "");
+    auto removed = cs->remove();
+    EXPECT_EQ(removed, true);
 
+    EXPECT_EQ(cs->id(), "");
+    EXPECT_EQ(cs->name(), "");
+    EXPECT_EQ(cs->country(), "");
 }
 
 TEST(Championships, start_new_season)
 {
-        const char CLUB_COUNT{20};
-        const std::string YEAR{"2023/2024"};
+    using football::championship;
+    using football::club;
+    using football::New;
+    using football::season;
 
-        PLOG_DEBUG << "[TEST] Creating championship";
+    const char CLUB_COUNT{20};
+    const std::string COUNTRY{"AR"};
+    const std::string YEAR{"2023/2024"};
 
-        football::championship championship{ "Championship", "GB" };
-        bool saved = championship.save();
+    PLOG_DEBUG << "[TEST] Creating championship";
+
+    auto cs = New<championship>("Championship", COUNTRY);
+    bool saved = cs->save();
+    EXPECT_EQ(saved, true);
+    EXPECT_NE(cs->id(), "");
+
+    PLOG_DEBUG << "[TEST] Creating the season";
+
+    auto ss = New<season>(cs, YEAR);
+    EXPECT_EQ(ss->id(), "");
+    saved = ss->save();
+    EXPECT_EQ(saved, true);
+    EXPECT_NE(ss->id(), "");
+    EXPECT_EQ(ss->championshp().id(), cs->id());
+    EXPECT_EQ(ss->year(), YEAR);
+
+    std::vector<football::club> clubs{};
+    clubs.reserve(CLUB_COUNT);
+
+    PLOG_DEBUG << "[TEST] Creating the list of clubs";
+
+    for (char i{0}; i < CLUB_COUNT; ++i)
+    {
+        std::string club_name{(char)('A' + i)};
+        auto cl = club{club_name, COUNTRY};
+        EXPECT_EQ(cl.id(), "");
+        saved = cl.save();
         EXPECT_EQ(saved, true);
-        EXPECT_NE(championship.id(), "");
+        clubs.push_back(cl);
+    }
 
-        PLOG_DEBUG << "[TEST] Creating the season";
+    PLOG_DEBUG << "[TEST] Adding clubs to the season object";
 
-        football::season season{ championship, YEAR};
-        EXPECT_EQ(season.id(), "");
-        saved = season.save();
-        EXPECT_EQ(saved, true);
-        EXPECT_NE(season.id(), "");
-        EXPECT_EQ(season.championship().id(), championship.id());
-        EXPECT_EQ(season.year(), YEAR);
+    EXPECT_EQ(clubs.size(), CLUB_COUNT);
+    for (auto &cl : clubs)
+    {
+        ss->add_club(cl);
+        EXPECT_NE(cl.id(), "");
+    }
 
-        std::vector<football::club> clubs{};
-        clubs.reserve(CLUB_COUNT);
+    EXPECT_EQ(clubs.size(), CLUB_COUNT);
+    EXPECT_EQ(ss->club_count(), CLUB_COUNT);
 
-        PLOG_DEBUG << "[TEST] Creating the list of clubs";
+    PLOG_DEBUG << "[TEST] Removing clubs from the season object";
 
-        for (char i{0}; i < CLUB_COUNT; ++i)
-        {
-                std::string club_name{(char)('A' + i)};
-                football::club club{club_name};
-                EXPECT_EQ(club.id(), "");
-                saved = club.save();
-                EXPECT_EQ(saved, true);
-                clubs.push_back(club);
-        }
+    bool removed{};
+    for (char i{CLUB_COUNT - 1}; i >= 0; --i)
+    {
+        auto cl = ss->club_at(i);
 
-        PLOG_DEBUG << "[TEST] Adding clubs to the season object";
+        EXPECT_NE(cl.id(), "");
+        ss->remove_club(cl);
 
-        EXPECT_EQ(clubs.size(), CLUB_COUNT);
-        for (auto const& club : clubs) {
-                season.add_club(club);
-                EXPECT_NE(club.id(), "");
-        }
-
-        EXPECT_EQ(clubs.size(), CLUB_COUNT);
-        EXPECT_EQ(season.club_count(), CLUB_COUNT);
-
-        PLOG_DEBUG << "[TEST] Removing clubs from the season object";
-
-        bool removed{};
-        for (char i{CLUB_COUNT - 1}; i >= 0; --i)
-        {
-                football::club club = season.club_at(i);
-
-                EXPECT_NE(club.id(), "");
-                season.remove_club(club);
-
-                removed = club.remove();
-                EXPECT_EQ(removed, true);
-        }
-
-        EXPECT_EQ(season.club_count(), 0);
-
-        removed = season.remove();
+        removed = cl.remove();
         EXPECT_EQ(removed, true);
+    }
 
-        removed = championship.remove();
-        EXPECT_EQ(removed, true);
+    EXPECT_EQ(ss->club_count(), 0);
 
-} */
+    removed = ss->remove();
+    EXPECT_EQ(removed, true);
+
+    removed = cs->remove();
+    EXPECT_EQ(removed, true);
+}

@@ -1,6 +1,6 @@
 
 #include "classes/club.hpp"
-#include "globals.hpp"
+#include "util/globals.hpp"
 #include "plog/Initializers/RollingFileInitializer.h"
 #include "plog/Log.h"
 #include "util/toml.hpp"

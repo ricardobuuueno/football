@@ -18,7 +18,6 @@ set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}" "-checks=-*,modernize-*")
 
 add_executable(football 
 football.cpp
-globals.cpp
 )
 
 # set CXX_CLANG_TIDY property after defining the target
@@ -64,7 +63,6 @@ add_executable(
   football-test/test.cpp
   football-test/pch.cpp
   football-test/objects.cpp
-  globals.cpp
 )
 
 set_target_properties(football-test 

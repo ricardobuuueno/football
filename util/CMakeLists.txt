@@ -1,6 +1,8 @@
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(util
+constants.hpp
+globals.cpp
 toml.hpp
 util.cpp
 )

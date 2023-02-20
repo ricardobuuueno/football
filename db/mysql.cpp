@@ -181,7 +181,7 @@ auto table::to_string() -> std::string
 
 auto table::next() const -> bool
 {
-    return srv.has_rows();
+    return srv.next();
 }
 
 auto table::get_value(const std::string &field) const -> std::string
@@ -233,10 +233,9 @@ auto table::start_list(const std::string &field1, const std::string &value1) -> 
 
     if (select_list(stmt))
     {
+        set(field1, value1);
         return true;
     }
-
-    set(field1, value1);
 
     return false;
 }

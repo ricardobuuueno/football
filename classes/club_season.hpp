@@ -19,6 +19,16 @@ class club_season final : public mysql::table
         start_list("season", _season_id);
     }
 
+    std::string club_id() const
+    {
+        return _club_id;
+    }
+
+    std::string season_id() const
+    {
+        return _season_id;
+    }
+
     bool empty() override
     {
         return false;

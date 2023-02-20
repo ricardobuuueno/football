@@ -13,8 +13,8 @@ namespace football
 class season final : public mysql::table
 {
   public:
-    season(championship &championship, const std::string &year)
-        : table("seasons", "championship", "year"), _id(""), _championship(championship), _year(year), _clubs{}
+    season(pchampionship &championship, const std::string &year)
+        : table("seasons", "championship", "year"), _id(""), _championship(*championship), _year(year), _clubs{}
     {
         if (start("championship", _championship.id(), "year", _year))
         {
@@ -38,6 +38,10 @@ class season final : public mysql::table
         return _championship;
     }
 
+    void add_club(club &club)
+    {
+        _clubs.emplace_back(club);
+    }
     void add_club(pclub &club)
     {
         _clubs.emplace_back(*club);
@@ -50,7 +54,7 @@ class season final : public mysql::table
     {
         return _clubs.size();
     }
-    void remove_club(club club)
+    void remove_club(const club &club)
     {
         if (auto it = std::find(_clubs.begin(), _clubs.end(), club); it != _clubs.end())
         {
@@ -87,6 +91,8 @@ class season final : public mysql::table
         club_season cs{_id};
         while (cs.next())
         {
+            auto club_id = cs.get_value("club");
+            _clubs.emplace_back(club_id);
         }
     }
 
