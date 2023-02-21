@@ -2,7 +2,10 @@
     "configurations": [
         {
             "name": "Linux",
-            "includePath": ["${workspaceFolder}/**"],
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/home/ricardo/boost_1_81_0"
+            ],
             "defines": [],
             "compilerPath": "/usr/bin/clang-14",
             "cStandard": "c17",

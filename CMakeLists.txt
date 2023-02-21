@@ -4,6 +4,7 @@ project(football VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_DEBUG_POSTFIX d)
+set(Boost_NO_WARN_NEW_VERSIONS 1)
 
 add_subdirectory(classes)
 add_subdirectory(db)
@@ -16,16 +17,16 @@ find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRED)
 # setup clang-tidy command from executable + options
 set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}" "-checks=-*,modernize-*;-header-filter=.*")
 
-add_executable(football 
+add_executable(${PROJECT_NAME} 
 football.cpp
 )
 
 # set CXX_CLANG_TIDY property after defining the target
-set_target_properties(football 
+set_target_properties(${PROJECT_NAME} 
 PROPERTIES 
 CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
 
-set_target_properties(football 
+set_target_properties(${PROJECT_NAME} 
 PROPERTIES 
 RUNTIME_OUTPUT_DIRECTORY "~/football/bin"
 )
@@ -34,7 +35,11 @@ set_target_properties(football
 PROPERTIES 
 DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
-target_link_libraries(football PUBLIC classes db util)
+#include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+#conan_basic_setup()
+
+target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS})
+target_link_libraries(${PROJECT_NAME} PUBLIC classes db util)
 
 target_include_directories(classes PRIVATE ~/football/classes/)
 target_include_directories(db PRIVATE ~/football/db/)
@@ -42,10 +47,27 @@ target_include_directories(util PRIVATE ~/football/util/)
 target_include_directories(plog PRIVATE ~/football/plog/)
 
 
+######### BOOST ###############
+
+set(BOOST_ROOT /home/ricardo/boost_1_81_0)
+set(Boost_INCLUDE_DIR  /home/ricardo/boost_1_81_0)
+set(Boost_LIBRARY_DIR /home/ricardo/boost_1_81_0/libs)
+
+set(Boost_USE_STATIC_LIBS OFF) 
+set(Boost_USE_MULTITHREADED ON)  
+set(Boost_USE_STATIC_RUNTIME OFF) 
+find_package(Boost 1.81.0 COMPONENTS system thread regex) 
+
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS}) 
+    target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+endif()
+
+
 ######### GOOGLE TESTS ###############
 
 include(FetchContent)
-FetchContent_Declare(
+FetchContent_Declare( 
   googletest
   URL https://github.com/google/googletest/archive/b796f7d44681514f58a683a3a71ff17c94edb0c1.zip
 )
