@@ -48,20 +48,34 @@ class championship final : public mysql::table
         return *this;
     }
 
-    std::string id() const
+    auto operator==(const championship &other) const -> bool
+    {
+        return (_id == other.id() && _name == other.name() && _country == other.country());
+    }
+
+    [[nodiscard]] auto id() const -> std::string override
     {
         return _id;
     }
-    std::string name() const
+    [[nodiscard]] auto name() const -> std::string
     {
         return _name;
     }
-    std::string country() const
+    [[nodiscard]] auto country() const -> std::string
     {
         return _country;
     }
 
-    bool empty() override
+    auto name(const std::string &club_name) -> void
+    {
+        _name = club_name;
+    }
+    auto country(const std::string &country_code) -> void
+    {
+        _country = country_code;
+    }
+
+    [[nodiscard]] auto empty() -> bool override
     {
         return (_id.empty() && _name.empty() && _country.empty());
     }

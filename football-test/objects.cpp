@@ -70,3 +70,94 @@ TEST(Objects, club)
     EXPECT_EQ(removed, true);
     EXPECT_EQ(club5.empty(), true);
 }
+
+TEST(Objects, championship)
+{
+    using football::championship;
+
+    const std::string CHAMPIONSHIP{"Championship"};
+    const std::string COUNTRY{"GB"};
+
+    auto cs = championship{};
+    EXPECT_EQ(cs.empty(), true);
+    EXPECT_EQ(cs.sql_count(), 0);
+
+    cs.name(CHAMPIONSHIP);
+    cs.country(COUNTRY);
+
+    auto saved = cs.save();
+    std::string id = cs.id();
+
+    EXPECT_EQ(saved, true);
+    EXPECT_EQ(cs.empty(), false);
+    EXPECT_NE(cs.sql_count(), 0);
+    EXPECT_EQ(cs.name(), CHAMPIONSHIP);
+    EXPECT_EQ(cs.country(), COUNTRY);
+
+    auto cs2 = championship{CHAMPIONSHIP, COUNTRY};
+    EXPECT_EQ(cs.empty(), false);
+    EXPECT_NE(cs.sql_count(), 0);
+    EXPECT_EQ(cs.name(), cs2.name());
+    EXPECT_EQ(cs.country(), cs2.country());
+    EXPECT_EQ(cs.id(), cs2.id());
+
+    saved = cs2.save();
+    EXPECT_EQ(saved, true);
+    EXPECT_EQ(id, cs2.id());
+
+    championship copy = cs2;
+    EXPECT_EQ(cs2, copy);
+    EXPECT_EQ(cs, copy);
+    EXPECT_EQ(copy.sql_count(), 0);
+
+    championship copy2(cs2);
+    EXPECT_EQ(cs2, copy2);
+    EXPECT_EQ(cs, copy2);
+    EXPECT_EQ(copy2.sql_count(), 0);
+
+    auto removed = copy2.remove();
+    EXPECT_EQ(removed, true);
+
+    auto cs3 = championship{CHAMPIONSHIP, COUNTRY};
+    EXPECT_EQ(cs3.id(), "");
+}
+
+TEST(Objects, season)
+{
+    using football::championship;
+    using football::club;
+    using football::New;
+    using football::season;
+
+    const std::string CHAMPIONSHIP{"Championship"};
+    const std::string COUNTRY{"GB"};
+    const std::string YEAR{"2024"};
+    const std::string CLUB{"THEFC"};
+
+    auto cs = New<championship>(CHAMPIONSHIP, COUNTRY);
+    auto saved = cs->save();
+    EXPECT_EQ(saved, true);
+
+    auto ss = season{cs, YEAR};
+    saved = ss.save();
+    EXPECT_EQ(saved, true);
+
+    auto cl = club{CLUB, COUNTRY};
+    saved = cl.save();
+    EXPECT_EQ(saved, true);
+
+    ss.add_club(cl);
+    ss.add_club(cl);
+    saved = ss.save();
+    EXPECT_EQ(saved, true);
+    EXPECT_EQ(ss.club_count(), 1);
+
+    auto removed = ss.remove();
+    EXPECT_EQ(removed, true);
+
+    removed = cs->remove();
+    EXPECT_EQ(removed, true);
+
+    removed = cl.remove();
+    EXPECT_EQ(removed, true);
+}

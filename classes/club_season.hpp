@@ -19,19 +19,24 @@ class club_season final : public mysql::table
         start_list("season", _season_id);
     }
 
-    std::string club_id() const
-    {
-        return _club_id;
-    }
-
-    std::string season_id() const
+    [[nodiscard]] auto id() const -> std::string override
     {
         return _season_id;
     }
 
-    bool empty() override
+    [[nodiscard]] auto club_id() const -> std::string
     {
-        return false;
+        return _club_id;
+    }
+
+    [[nodiscard]] auto season_id() const -> std::string
+    {
+        return _season_id;
+    }
+
+    [[nodiscard]] auto empty() -> bool override
+    {
+        return (_club_id.empty() && _season_id.empty());
     }
 
   private:

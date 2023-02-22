@@ -74,8 +74,9 @@ class table
 
     [[nodiscard]] auto sql_count() const -> int;
 
-    virtual auto empty() -> bool = 0;
-    virtual auto to_string() -> std::string;
+    [[nodiscard]] virtual auto id() const -> std::string = 0;
+    [[nodiscard]] virtual auto empty() -> bool = 0;
+    [[nodiscard]] virtual auto to_string() -> std::string;
 
     [[nodiscard]] auto next() const -> bool;
     [[nodiscard]] auto get_value(const std::string &field) const -> std::string;

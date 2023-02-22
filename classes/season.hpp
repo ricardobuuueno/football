@@ -25,26 +25,38 @@ class season final : public mysql::table
         }
     }
 
-    std::string id() const
+    auto id() const -> std::string override
     {
         return _id;
     }
-    std::string year() const
+    auto year() const -> std::string
     {
         return _year;
     }
-    const championship &championshp() const
+    auto championshp() const -> const championship &
     {
         return _championship;
     }
 
-    void add_club(club &club)
+    void add_club(club &cl)
     {
-        _clubs.emplace_back(club);
+        if (auto it =
+                std::find_if(_clubs.begin(), _clubs.end(),
+                             [&](const club &c) { return (c.name() == cl.name() && c.country() == cl.country()); });
+            it == _clubs.end())
+        {
+            _clubs.emplace_back(cl);
+        }
     }
-    void add_club(pclub &club)
+    void add_club(pclub &cl)
     {
-        _clubs.emplace_back(*club);
+        if (auto it =
+                std::find_if(_clubs.begin(), _clubs.end(),
+                             [&](const club &c) { return (c.name() == cl->name() && c.country() == cl->country()); });
+            it == _clubs.end())
+        {
+            _clubs.emplace_back(*cl);
+        }
     }
     const football::club &club_at(std::size_t index) const
     {
@@ -54,9 +66,12 @@ class season final : public mysql::table
     {
         return _clubs.size();
     }
-    [[nodiscard]] bool remove_club(const club &club)
+    [[nodiscard]] bool remove_club(const club &cl)
     {
-        if (auto it = std::find(_clubs.begin(), _clubs.end(), club); it != _clubs.end())
+        if (auto it =
+                std::find_if(_clubs.begin(), _clubs.end(),
+                             [&](const club &c) { return (c.name() == cl.name() && c.country() == cl.country()); });
+            it != _clubs.end())
         {
             _clubs.erase(it);
             return true;

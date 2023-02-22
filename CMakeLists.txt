@@ -39,7 +39,7 @@ DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 #conan_basic_setup()
 
 target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS})
-target_link_libraries(${PROJECT_NAME} PUBLIC classes db util)
+target_link_libraries(${PROJECT_NAME} classes db util)
 
 target_include_directories(classes PRIVATE ~/football/classes/)
 target_include_directories(db PRIVATE ~/football/db/)
@@ -49,9 +49,9 @@ target_include_directories(plog PRIVATE ~/football/plog/)
 
 ######### BOOST ###############
 
-set(BOOST_ROOT /home/ricardo/boost_1_81_0)
-set(Boost_INCLUDE_DIR  /home/ricardo/boost_1_81_0)
-set(Boost_LIBRARY_DIR /home/ricardo/boost_1_81_0/libs)
+set(BOOST_ROOT /usr/local)
+set(Boost_INCLUDE_DIR  /usr/local/include)
+set(Boost_LIBRARY_DIR /usr/local/lib)
 
 set(Boost_USE_STATIC_LIBS OFF) 
 set(Boost_USE_MULTITHREADED ON)  

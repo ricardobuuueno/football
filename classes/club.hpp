@@ -61,10 +61,10 @@ class club final : public mysql::table
 
     auto operator==(const club &other) const -> bool
     {
-        return (_name == other.name() && _country == other.country());
+        return (_id == other.id() && _name == other.name() && _country == other.country());
     }
 
-    [[nodiscard]] auto id() const -> std::string
+    [[nodiscard]] auto id() const -> std::string override
     {
         return _id;
     }
