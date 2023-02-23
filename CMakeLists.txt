@@ -8,6 +8,7 @@ set(Boost_NO_WARN_NEW_VERSIONS 1)
 
 add_subdirectory(classes)
 add_subdirectory(db)
+add_subdirectory(net)
 add_subdirectory(util)
 add_subdirectory(plog)
 
@@ -39,10 +40,11 @@ DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 #conan_basic_setup()
 
 target_link_libraries(${PROJECT_NAME} ${CONAN_LIBS})
-target_link_libraries(${PROJECT_NAME} classes db util)
+target_link_libraries(${PROJECT_NAME} classes db net util)
 
 target_include_directories(classes PRIVATE ~/football/classes/)
 target_include_directories(db PRIVATE ~/football/db/)
+target_include_directories(net PRIVATE ~/football/net/)
 target_include_directories(util PRIVATE ~/football/util/)
 target_include_directories(plog PRIVATE ~/football/plog/)
 
