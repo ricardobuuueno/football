@@ -5,6 +5,8 @@ client.hpp
 common.hpp
 connection.hpp
 event.hpp
+football_client.hpp
+football_server.hpp
 message.hpp
 server.hpp
 tsqueue.hpp

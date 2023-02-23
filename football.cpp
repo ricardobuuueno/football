@@ -1,5 +1,6 @@
 
 #include "classes/club.hpp"
+#include "net/football_server.hpp"
 #include "plog/Initializers/RollingFileInitializer.h"
 #include "plog/Log.h"
 #include "util/globals.hpp"

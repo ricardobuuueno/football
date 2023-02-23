@@ -11,7 +11,8 @@ namespace net
 template <typename T> class server_interface
 {
   public:
-    server_interface(uint16_t port) : m_asioAcceptor(m_asioContext, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port))
+    server_interface(uint16_t port)
+        : m_asioAcceptor(m_asioContext, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
     {
     }
 
@@ -20,7 +21,7 @@ template <typename T> class server_interface
         stop();
     }
 
-    bool start()
+    auto start() -> bool
     {
         try
         {
@@ -47,7 +48,7 @@ template <typename T> class server_interface
 
     void wait_for_client_connection()
     {
-        m_asioAcceptor.async_accept([this](std::error_code ec, asio::ip::tcp::socket socket) {
+        m_asioAcceptor.async_accept([this](std::error_code ec, boost::asio::ip::tcp::socket socket) {
             if (!ec)
             {
                 std::cout << "[SERVER] New Connection: " << socket.remote_endpoint() << "\n";
@@ -138,12 +139,12 @@ template <typename T> class server_interface
   protected:
     tsqueue<owned_message<T>> m_qMessagesIn;
     std::deque<std::shared_ptr<connection<T>>> m_deqConnections;
-    asio::io_context m_asioContext;
+    boost::asio::io_context m_asioContext;
     std::thread m_threadContext;
-    asio::ip::tcp::acceptor m_asioAcceptor;
+    boost::asio::ip::tcp::acceptor m_asioAcceptor;
     uint32_t nIDCounter{10000};
 
-    virtual bool on_client_connect(std::shared_ptr<connection<T>> client)
+    virtual auto on_client_connect(std::shared_ptr<connection<T>> client) -> bool
     {
         return false;
     }

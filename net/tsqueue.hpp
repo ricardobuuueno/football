@@ -16,19 +16,19 @@ template <typename T> class tsqueue
         clear();
     }
 
-    const T &front()
+    auto front() -> const T &
     {
         std::scoped_lock lock(queue_mutex);
         return ts_queue.front();
     }
 
-    const T &back()
+    auto back() -> const T &
     {
         std::scoped_lock lock(queue_mutex);
         return ts_queue.back();
     }
 
-    T pop_front()
+    auto pop_front() -> T
     {
         std::scoped_lock lock(queue_mutex);
         auto t = std::move(ts_queue.front());
@@ -36,7 +36,7 @@ template <typename T> class tsqueue
         return t;
     }
 
-    T pop_back()
+    auto pop_back() -> T
     {
         std::scoped_lock lock(queue_mutex);
         auto t = std::move(ts_queue.back());
@@ -62,13 +62,13 @@ template <typename T> class tsqueue
         cv_wait.notify_one();
     }
 
-    bool empty()
+    auto empty() -> bool
     {
         std::scoped_lock lock(queue_mutex);
         return ts_queue.empty();
     }
 
-    size_t count()
+    auto count() -> size_t
     {
         std::scoped_lock lock(queue_mutex);
         return ts_queue.size();

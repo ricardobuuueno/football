@@ -7,6 +7,8 @@ namespace net
 
 enum class event_type : uint32_t
 {
+    accept,
+    ping,
     new_championship,
     new_club,
     new_season,
