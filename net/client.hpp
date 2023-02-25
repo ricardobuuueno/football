@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.hpp"
+#include "message.hpp"
 #include "tsqueue.hpp"
 
 namespace net
@@ -22,11 +23,11 @@ template <typename T> class client_interface
     {
         try
         {
-            asio::ip::tcp::resolver resolver(m_context);
-            asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
+            boost::asio::ip::tcp::resolver resolver(m_context);
+            boost::asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
 
             m_connection = std::make_unique<connection<T>>(connection<T>::owner::client, m_context,
-                                                           asio::ip::tcp::socket(m_context), m_qMessagesIn);
+                                                           boost::asio::ip::tcp::socket(m_context), m_qMessagesIn);
 
             m_connection->connect_to_server(endpoints);
 
@@ -83,7 +84,7 @@ template <typename T> class client_interface
     }
 
   protected:
-    asio::io_context m_context;
+    boost::asio::io_context m_context;
     std::thread thrContext;
     std::unique_ptr<connection<T>> m_connection;
 

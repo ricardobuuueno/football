@@ -65,6 +65,20 @@ if(Boost_FOUND)
     target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 endif()
 
+######### RADAR ######################
+
+add_executable(
+  radar
+  radar.cpp
+)
+
+set_target_properties(radar 
+PROPERTIES 
+RUNTIME_OUTPUT_DIRECTORY "~/football/bin"
+)
+
+target_link_libraries(radar classes db net util)
+
 
 ######### GOOGLE TESTS ###############
 
@@ -84,6 +98,7 @@ enable_testing()
 
 add_executable(
   football-test
+  football-test/client_server.cpp
   football-test/football.cpp
   football-test/pch.cpp
   football-test/objects.cpp
@@ -94,7 +109,7 @@ PROPERTIES
 RUNTIME_OUTPUT_DIRECTORY "~/football/bin"
 )
 
-target_link_libraries(football-test GTest::gtest_main classes db util)
+target_link_libraries(football-test GTest::gtest_main classes db net util)
 
 include(GoogleTest)
 gtest_discover_tests(football-test)

@@ -3,5 +3,7 @@ x64/
 build/
 bin/football
 bin/footballd
+bin/radar
+bin/radard
 bin/football-test
 bin/*.log

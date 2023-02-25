@@ -23,4 +23,14 @@ int main(int argc, char *argv[])
     bool saved = sp.save();
 
     std::cout << "Club: " << sp.id() << " " << sp.name() << '\n';
+
+    net::football_server server(60000);
+    server.start();
+
+    while (true)
+    {
+        server.update();
+    }
+
+    return 0;
 }
