@@ -24,13 +24,13 @@ USE `football`;
 DROP TABLE IF EXISTS `championships`;
 CREATE TABLE IF NOT EXISTS `championships` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `country` char(2) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `f_country` (`country`),
   CONSTRAINT `f_country` FOREIGN KEY (`country`) REFERENCES `countries` (`country_code`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=138 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=556 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table football.championships: ~0 rows (approximately)
 DELETE FROM `championships`;
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `clubs` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `country` (`country`)
-) ENGINE=InnoDB AUTO_INCREMENT=934 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2854 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table football.clubs: ~0 rows (approximately)
 DELETE FROM `clubs`;
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `clubs_seasons` (
   `club` int unsigned NOT NULL,
   UNIQUE KEY `season` (`season`,`club`),
   KEY `f_club` (`club`),
-  CONSTRAINT `f_club` FOREIGN KEY (`club`) REFERENCES `clubs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `f_club` FOREIGN KEY (`club`) REFERENCES `clubs` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `f_season` FOREIGN KEY (`season`) REFERENCES `seasons` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `countries` (
   `country_name` varchar(80) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `country_code` (`country_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=254 DEFAULT CHARSET=utf8mb3;
 
 -- Dumping data for table football.countries: ~252 rows (approximately)
 DELETE FROM `countries`;
@@ -328,7 +328,8 @@ INSERT INTO `countries` (`id`, `phone_code`, `country_code`, `country_name`) VAL
 	(249, 212, 'EH', 'Western Sahara'),
 	(250, 967, 'YE', 'Yemen'),
 	(251, 260, 'ZM', 'Zambia'),
-	(252, 263, 'ZW', 'Zimbabwe');
+	(252, 263, 'ZW', 'Zimbabwe'),
+	(253, 44, 'EN', 'England');
 
 -- Dumping structure for table football.seasons
 DROP TABLE IF EXISTS `seasons`;
@@ -339,7 +340,7 @@ CREATE TABLE IF NOT EXISTS `seasons` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `championship` (`championship`,`year`),
   CONSTRAINT `k_championship` FOREIGN KEY (`championship`) REFERENCES `championships` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=384 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Dumping data for table football.seasons: ~0 rows (approximately)
 DELETE FROM `seasons`;

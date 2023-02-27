@@ -20,13 +20,13 @@ enum class event_type : uint32_t
 
 struct response
 {
-    std::string id;
+    uint64_t id{0};
 };
 
 struct new_championship
 {
-    std::string name;
-    std::string country;
+    std::array<char, 100> name;
+    std::array<char, 2> country;
 };
 
 } // namespace net

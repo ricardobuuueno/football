@@ -44,14 +44,16 @@ TEST(Football_Server, start_server_thread)
 
 TEST(Football_Server, new_championship_event)
 {
-    const std::string CHAMP{"Premier League"};
+    const std::string CHAMP{"Prêmier Léague"};
     const std::string COUNTRY{"EN"};
 
     net::football_client client{};
     client.connect("127.0.0.1", 60000);
     EXPECT_EQ(client.is_connected(), true);
 
-    auto new_champ = net::new_championship{CHAMP, COUNTRY};
+    auto new_champ = net::new_championship{};
+    std::copy(CHAMP.begin(), CHAMP.end(), new_champ.name.data());
+    std::copy(COUNTRY.begin(), COUNTRY.end(), new_champ.country.data());
     net::message<net::event_type> msg;
     msg.header.id = net::event_type::new_championship;
     msg << new_champ;
@@ -59,7 +61,7 @@ TEST(Football_Server, new_championship_event)
     client.send(msg);
 
     auto accepted{false};
-    net::response resp{};
+    net::response res{};
 
     if (client.is_connected())
     {
@@ -75,13 +77,13 @@ TEST(Football_Server, new_championship_event)
                     break;
                 case net::event_type::new_championship:
                     std::cout << "new_championship\n";
-                    // msg >> resp;
-                    // std::cout << resp.id << '\n';
+                    msg >> res;
+                    std::cout << res.id << '\n';
                     break;
                 }
             }
 
-            if (accepted /* && !resp.id.empty() */)
+            if (accepted && res.id)
             {
                 break;
             }
@@ -89,4 +91,11 @@ TEST(Football_Server, new_championship_event)
     }
 
     EXPECT_EQ(accepted, true);
+    EXPECT_NE(res.id, 0);
+
+    /*     std::string str_id = std::to_string(res.id);
+        football::championship cs{str_id};
+        EXPECT_EQ(cs.id(), str_id);
+        EXPECT_EQ(cs.name(), CHAMP);
+        EXPECT_EQ(cs.country(), COUNTRY); */
 }
