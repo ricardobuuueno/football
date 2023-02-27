@@ -118,7 +118,7 @@ template <typename T> class server_interface
         }
     }
 
-    void update(size_t nMaxMessages = -1, bool bWait = false)
+    auto update(size_t nMaxMessages = -1, bool bWait = false) -> void
     {
         if (bWait)
         {
@@ -134,6 +134,11 @@ template <typename T> class server_interface
 
             nMessageCount++;
         }
+    }
+
+    auto no_inbound_message() -> bool
+    {
+        return m_qMessagesIn.empty();
     }
 
   protected:

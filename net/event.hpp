@@ -18,4 +18,15 @@ enum class event_type : uint32_t
     goal_scored
 };
 
+struct response
+{
+    std::string id;
+};
+
+struct new_championship
+{
+    std::string name;
+    std::string country;
+};
+
 } // namespace net

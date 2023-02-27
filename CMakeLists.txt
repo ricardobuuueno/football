@@ -98,7 +98,7 @@ enable_testing()
 
 add_executable(
   football-test
-  football-test/client_server.cpp
+  football-test/football_server.cpp
   football-test/football.cpp
   football-test/pch.cpp
   football-test/objects.cpp

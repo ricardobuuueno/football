@@ -15,15 +15,33 @@ class FootballEnvironment : public ::testing::Environment
     void SetUp() override
     {
         football::init(config_file);
+
+        server_future = std::async(std::launch::async, [&]() {
+            net::football_server server(PORT);
+            server.start();
+            while (true)
+            {
+                server.update();
+                if (cancel_thread && server.no_inbound_message())
+                {
+                    break;
+                }
+            }
+        });
     }
 
     // Override this to define how to tear down the environment.
     void TearDown() override
     {
+        cancel_thread = true;
+        server_future.get();
     }
 
   private:
+    const uint16_t PORT{60000};
     const std::string config_file;
+    std::atomic_bool cancel_thread{ATOMIC_VAR_INIT(false)};
+    std::future<void> server_future;
 };
 
 int main(int argc, char **argv)

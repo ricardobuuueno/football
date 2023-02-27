@@ -36,6 +36,22 @@ class football_server : public server_interface<event_type>
             client->send(msg);
         }
         break;
+        case event_type::new_championship: {
+            net::new_championship new_champ;
+            msg >> new_champ;
+            // std::cout << new_champ.name << '\n';
+
+            // net::response res{"1"};
+            // msg << res;
+            // std::cout << "response\n";
+
+            // net::message<net::event_type> res_msg;
+            // res_msg.header.id = event_type::new_championship;
+            // res_msg << res;
+
+            client->send(msg);
+        }
+        break;
         }
     }
 };

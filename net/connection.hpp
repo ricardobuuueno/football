@@ -161,7 +161,7 @@ template <typename T> class connection : public std::enable_shared_from_this<con
                                     }
                                     else
                                     {
-                                        std::cout << "[" << id << "] Read Header Fail.\n";
+                                        std::cout << "[" << id << "] Read Header Fail: " << ec.message() << '\n';
                                         m_socket.close();
                                     }
                                 });
