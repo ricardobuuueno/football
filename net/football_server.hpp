@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event.hpp"
+#include "event_action.hpp"
 #include "server.hpp"
 
 namespace net
@@ -37,20 +38,30 @@ class football_server : public server_interface<event_type>
         }
         break;
         case event_type::new_championship: {
-            net::new_championship new_champ;
-            msg >> new_champ;
-            std::cout << new_champ.name.size() << '\n';
-
-            net::response res{1};
-
-            net::message<net::event_type> res_msg;
-            res_msg.header.id = event_type::new_championship;
-            res_msg << res;
-
-            client->send(res_msg);
+            auto res = execute_action<net::new_championship>(msg);
+            client->send(res);
+        }
+        case event_type::new_club: {
+            auto res = execute_action<net::new_club>(msg);
+            client->send(res);
         }
         break;
         }
+    }
+
+  private:
+    template <typename T> auto execute_action(net::message<event_type> &msg) -> net::message<net::event_type>
+    {
+        T new_object;
+        msg >> new_object;
+
+        auto res = event_action(new_object);
+
+        net::message<net::event_type> res_msg;
+        res_msg.header.id = new_object.type;
+        res_msg << res;
+
+        return res_msg;
     }
 };
 

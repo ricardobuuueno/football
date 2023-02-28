@@ -73,10 +73,12 @@ class table
     [[nodiscard]] auto remove() -> bool;
 
     [[nodiscard]] auto sql_count() const -> int;
+    [[nodiscard]] auto found() const -> bool;
 
     [[nodiscard]] virtual auto id() const -> std::string = 0;
     [[nodiscard]] virtual auto empty() -> bool = 0;
     [[nodiscard]] virtual auto to_string() -> std::string;
+    [[nodiscard]] auto id_int() const -> uint64_t;
 
     [[nodiscard]] auto next() const -> bool;
     [[nodiscard]] auto get_value(const std::string &field) const -> std::string;
@@ -110,6 +112,7 @@ class table
     std::map<std::string, std::string> fields_values{};
 
     int _sql_count{};
+    bool _found;
 
     [[nodiscard]] auto fields() const -> std::string;
     [[nodiscard]] auto values() const -> std::string;

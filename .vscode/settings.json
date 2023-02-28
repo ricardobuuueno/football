@@ -82,6 +82,8 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "*.ipp": "cpp",
-        "bitset": "cpp"
+        "bitset": "cpp",
+        "internet": "cpp",
+        "io_context": "cpp"
     }
 }

@@ -129,21 +129,21 @@ auto server::get_values(std::map<std::string, std::string> &field_values) const 
 
 // public
 table::table(const std::string name, const std::string field1, const std::string field2)
-    : tablename(std::move(name)), key_field1(std::move(field1)), key_field2(std::move(field2))
+    : tablename(std::move(name)), key_field1(std::move(field1)), key_field2(std::move(field2)), _found(false)
 {
     PLOG_DEBUG << to_string();
 }
 
 table::table(const table &other)
     : tablename(other.tablename), key_field1(other.key_field1), key_field2(other.key_field2),
-      fields_values(other.fields_values)
+      fields_values(other.fields_values), _found(other._found)
 {
     PLOG_DEBUG << to_string();
 }
 
 table::table(table &&other)
     : tablename(std::move(other.tablename)), key_field1(std::move(other.key_field1)),
-      key_field2(std::move(other.key_field2)), fields_values(std::move(other.fields_values))
+      key_field2(std::move(other.key_field2)), fields_values(std::move(other.fields_values)), _found(other._found)
 {
     PLOG_DEBUG << to_string();
 }
@@ -196,6 +196,11 @@ auto table::sql_count() const -> int
     return _sql_count;
 }
 
+auto table::found() const -> bool
+{
+    return _found;
+}
+
 auto table::to_string() -> std::string
 {
     std::string str{};
@@ -204,6 +209,12 @@ auto table::to_string() -> std::string
         str += (field + ": " + value + " ");
     }
     return fmt::format("[tablename: {}, key1: {}, key 2: {} fields: ({})]", tablename, key_field1, key_field2, str);
+}
+
+auto table::id_int() const -> uint64_t
+{
+    auto idd = id();
+    return (idd.empty() ? 0 : std::stoi(idd));
 }
 
 auto table::next() const -> bool
@@ -294,7 +305,8 @@ auto table::select(const std::string &stmt) -> bool
     srv->execute();
     ++_sql_count;
 
-    if (srv->has_rows())
+    _found = srv->has_rows();
+    if (_found)
     {
         srv->get_values(fields_values);
         return true;
@@ -312,7 +324,9 @@ auto table::select_list(const std::string &stmt) -> bool
     srv->execute();
     ++_sql_count;
 
-    return srv->has_rows();
+    _found = srv->has_rows();
+
+    return _found;
 }
 
 auto table::insert() -> bool

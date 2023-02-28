@@ -5,6 +5,7 @@ client.hpp
 common.hpp
 connection.hpp
 event.hpp
+event_action.cpp
 football_client.hpp
 football_server.hpp
 message.hpp
