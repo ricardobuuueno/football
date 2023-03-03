@@ -38,4 +38,11 @@ struct new_club
     event_type type{event_type::new_club};
 };
 
+struct new_season
+{
+    uint64_t championship{0};
+    std::array<wchar_t, 10> year;
+    event_type type{event_type::new_season};
+};
+
 } // namespace net

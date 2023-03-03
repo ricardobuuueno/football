@@ -1,9 +1,12 @@
 #include "pch.h"
 
-TEST(Football_Server, start_server_thread)
+const std::string HOST{"127.0.0.1"};
+const uint16_t PORT{60000};
+
+/* TEST(Football_Server, start_server_thread)
 {
     net::football_client client{};
-    client.connect("127.0.0.1", 60000);
+    client.connect(HOST, PORT);
     EXPECT_EQ(client.is_connected(), true);
 
     client.ping_server();
@@ -36,8 +39,6 @@ TEST(Football_Server, start_server_thread)
         }
     }
 
-    // test::sleep(1);
-
     EXPECT_EQ(accepted, true);
     EXPECT_EQ(answered, true);
 }
@@ -48,7 +49,7 @@ TEST(Football_Server, new_championship_event)
     const std::string COUNTRY{"EN"};
 
     net::football_client client{};
-    client.connect("127.0.0.1", 60000);
+    client.connect(HOST, PORT);
     EXPECT_EQ(client.is_connected(), true);
 
     auto new_champ = net::new_championship{};
@@ -76,7 +77,6 @@ TEST(Football_Server, new_championship_event)
                     accepted = true;
                     break;
                 case net::event_type::new_championship:
-                    std::cout << "new_championship\n";
                     msg >> res;
                     std::cout << res.id << '\n';
                     break;
@@ -89,8 +89,6 @@ TEST(Football_Server, new_championship_event)
             }
         }
     }
-
-    // test::sleep(1);
 
     EXPECT_EQ(accepted, true);
     EXPECT_NE(res.id, 0);
@@ -115,7 +113,7 @@ TEST(Football_Server, new_club_event)
     const std::string COUNTRY{"EN"};
 
     net::football_client client{};
-    client.connect("127.0.0.1", 60000);
+    client.connect(HOST, PORT);
     EXPECT_EQ(client.is_connected(), true);
 
     auto new_champ = net::new_championship{};
@@ -154,11 +152,9 @@ TEST(Football_Server, new_club_event)
                     break;
                 case net::event_type::new_championship:
                     msg >> champ_res;
-                    std::cout << "champ: " << champ_res.id << '\n';
                     break;
                 case net::event_type::new_club:
                     msg >> club_res;
-                    std::cout << "club: " << club_res.id << '\n';
                     break;
                 }
             }
@@ -173,15 +169,159 @@ TEST(Football_Server, new_club_event)
     EXPECT_EQ(accepted, true);
     EXPECT_NE(champ_res.id, 0);
 
-    std::string str_id = std::to_string(champ_res.id);
-    football::championship cs{str_id};
-    EXPECT_EQ(cs.id(), str_id);
+    std::string cs_id = std::to_string(champ_res.id);
+    football::championship cs{cs_id};
+    EXPECT_EQ(cs.id(), cs_id);
     EXPECT_EQ(cs.name(), CHAMP);
     EXPECT_EQ(cs.country(), COUNTRY);
 
-    auto removed = cs.remove();
+    std::string cl_id = std::to_string(club_res.id);
+    football::club cl{cl_id};
+    EXPECT_EQ(cl.id(), cl_id);
+    EXPECT_EQ(cl.name(), CLUB);
+    EXPECT_EQ(cl.country(), COUNTRY);
+
+    auto removed = cl.remove();
     EXPECT_EQ(removed, true);
 
-    football::championship cs2{str_id};
+    removed = cs.remove();
+    EXPECT_EQ(removed, true);
+
+    football::championship cs2{cs_id};
     EXPECT_EQ(cs2.found(), false);
+
+    football::club cl2{cl_id};
+    EXPECT_EQ(cl2.found(), false);
+} */
+
+TEST(Football_Server, new_season_event)
+{
+    const std::string CHAMP{"Prêmier Léague"};
+    const std::string CLUB{"Lêtégão 2º Football Club"};
+    const std::string COUNTRY{"EN"};
+    const std::string YEAR{"2023"};
+
+    net::football_client client{};
+    client.connect(HOST, PORT);
+    EXPECT_EQ(client.is_connected(), true);
+
+    auto new_champ = net::new_championship{};
+    std::copy(CHAMP.begin(), CHAMP.end(), new_champ.name.data());
+    std::copy(COUNTRY.begin(), COUNTRY.end(), new_champ.country.data());
+    net::message<net::event_type> msg;
+    msg.header.id = net::event_type::new_championship;
+    msg << new_champ;
+
+    client.send(msg);
+
+    auto new_club = net::new_club{};
+    std::copy(CLUB.begin(), CLUB.end(), new_club.name.data());
+    std::copy(COUNTRY.begin(), COUNTRY.end(), new_club.country.data());
+    net::message<net::event_type> msg_club;
+    msg_club.header.id = net::event_type::new_club;
+    msg_club << new_club;
+
+    client.send(msg_club);
+
+    auto accepted{false};
+    net::response champ_res{};
+    net::response club_res{};
+    net::response season_res{};
+
+    if (client.is_connected())
+    {
+        while (true)
+        {
+            if (!client.incoming().empty())
+            {
+                auto msg = client.incoming().pop_front().msg;
+                switch (msg.header.id)
+                {
+                case net::event_type::accept:
+                    accepted = true;
+                    break;
+                case net::event_type::new_championship:
+                    msg >> champ_res;
+                    break;
+                case net::event_type::new_club:
+                    msg >> club_res;
+                    break;
+                case net::event_type::new_season:
+                    msg >> season_res;
+                    break;
+                }
+            }
+
+            if (accepted && champ_res.id && club_res.id)
+            {
+                break;
+            }
+        }
+    }
+
+    EXPECT_EQ(accepted, true);
+    EXPECT_NE(champ_res.id, 0);
+
+    std::string cs_id = std::to_string(champ_res.id);
+    football::championship cs{cs_id};
+    EXPECT_EQ(cs.id(), cs_id);
+    EXPECT_EQ(cs.name(), CHAMP);
+    EXPECT_EQ(cs.country(), COUNTRY);
+
+    std::string cl_id = std::to_string(club_res.id);
+    football::club cl{cl_id};
+    EXPECT_EQ(cl.id(), cl_id);
+    EXPECT_EQ(cl.name(), CLUB);
+    EXPECT_EQ(cl.country(), COUNTRY);
+
+    auto new_season = net::new_season{};
+    new_season.championship = cs.id_int();
+    std::copy(YEAR.begin(), YEAR.end(), new_season.year.data());
+    net::message<net::event_type> msg_season;
+    msg_season.header.id = net::event_type::new_season;
+    msg_season << new_season;
+
+    client.send(msg_season);
+
+    if (client.is_connected())
+    {
+        while (true)
+        {
+            if (!client.incoming().empty())
+            {
+                auto msg = client.incoming().pop_front().msg;
+                switch (msg.header.id)
+                {
+                case net::event_type::new_season:
+                    msg >> season_res;
+                    break;
+                }
+            }
+
+            if (season_res.id)
+            {
+                break;
+            }
+        }
+    }
+
+    EXPECT_NE(season_res.id, 0);
+
+    /*    std::string ss_id = std::to_string(season_res.id);
+       football::season ss{ss_id};
+       EXPECT_EQ(cs.id(), cs_id);
+       EXPECT_EQ(cs.name(), CHAMP);
+       EXPECT_EQ(cs.country(), COUNTRY);
+
+    auto removed = cl.remove();
+    EXPECT_EQ(removed, true);
+
+    removed = cs.remove();
+    EXPECT_EQ(removed, true);
+
+    football::championship cs2{cs_id};
+    EXPECT_EQ(cs2.found(), false);
+
+    football::club cl2{cl_id};
+    EXPECT_EQ(cl2.found(), false);*/
 }

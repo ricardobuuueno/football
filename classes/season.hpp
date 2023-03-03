@@ -13,8 +13,8 @@ namespace football
 class season final : public mysql::table
 {
   public:
-    season(pchampionship &championship, const std::string &year)
-        : table("seasons", "championship", "year"), _id(""), _championship(*championship), _year(year), _clubs{}
+    season(championship &championship, const std::string &year)
+        : table("seasons", "championship", "year"), _id(""), _championship(championship), _year(year), _clubs{}
     {
         if (start("championship", _championship.id(), "year", _year))
         {
@@ -24,6 +24,20 @@ class season final : public mysql::table
             start_related();
         }
     }
+
+    season(pchampionship &championship, const std::string &year) : season(*championship, year)
+    {
+    }
+
+/*     season(const std::string &id) 
+    : table("seasons", "championship", "year"), _id(id), _championship(championship), _year(year), _clubs{}
+    {
+        if (start("id", _id))
+        {
+            _name = get("name");
+            _country = get("country");
+        }
+    } */
 
     auto id() const -> std::string override
     {
