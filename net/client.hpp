@@ -56,6 +56,8 @@ template <typename T> class client_interface
         }
 
         m_connection.release();
+
+        std::cerr << "Client disconnected.\n";
     }
 
     bool is_connected()

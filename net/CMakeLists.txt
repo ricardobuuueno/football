@@ -1,6 +1,7 @@
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(net
+../db/mysql.cpp
 client.hpp
 common.hpp
 connection.hpp

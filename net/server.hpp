@@ -18,6 +18,7 @@ template <typename T> class server_interface
 
     virtual ~server_interface()
     {
+        std::cout << "[SERVER] ~server_interface()\n";
         stop();
     }
 
@@ -59,7 +60,7 @@ template <typename T> class server_interface
                 if (on_client_connect(newconn))
                 {
                     m_deqConnections.push_back(std::move(newconn));
-                    m_deqConnections.back()->connect_to_client(nIDCounter++);
+                    m_deqConnections.back()->connect_to_client(this, nIDCounter++);
                     std::cout << "[" << m_deqConnections.back()->Id() << "] Connection Approved\n";
                 }
                 else
@@ -139,6 +140,10 @@ template <typename T> class server_interface
     auto no_inbound_message() -> bool
     {
         return m_qMessagesIn.empty();
+    }
+
+    virtual void on_client_validated(std::shared_ptr<connection<T>> client)
+    {
     }
 
   protected:

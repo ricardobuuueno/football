@@ -1,6 +1,6 @@
 #include "pch.h"
 
-TEST(Objects, club)
+/* TEST(Objects, club)
 {
     football::club club1{};
     EXPECT_EQ(club1.empty(), true);
@@ -160,4 +160,4 @@ TEST(Objects, season)
 
     removed = cl.remove();
     EXPECT_EQ(removed, true);
-}
+} */

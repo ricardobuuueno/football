@@ -7,6 +7,8 @@
 namespace net
 {
 
+template <typename T> class server_interface;
+
 template <typename T> class connection : public std::enable_shared_from_this<connection<T>>
 {
   public:
@@ -21,6 +23,17 @@ template <typename T> class connection : public std::enable_shared_from_this<con
         : m_asioContext(asioContext), m_socket(std::move(socket)), m_qMessagesIn(qIn)
     {
         m_nOwnerType = parent;
+
+        if (m_nOwnerType == owner::server)
+        {
+            m_nHandshake_out = uint64_t(std::chrono::system_clock::now().time_since_epoch().count());
+            m_nHandshake_check = scramble(m_nHandshake_out);
+        }
+        else
+        {
+            m_nHandshake_in = 0;
+            m_nHandshake_out = 0;
+        }
     }
 
     virtual ~connection() = default;
@@ -30,7 +43,7 @@ template <typename T> class connection : public std::enable_shared_from_this<con
         return id;
     }
 
-    void connect_to_client(uint32_t uid = 0)
+    void connect_to_client(net::server_interface<T> *server, uint32_t uid = 0)
     {
         if (m_nOwnerType == owner::server)
         {
@@ -38,6 +51,8 @@ template <typename T> class connection : public std::enable_shared_from_this<con
             {
                 id = uid;
                 read_header();
+                // write_validation();
+                // read_validation(server);
             }
         }
     }
@@ -51,6 +66,7 @@ template <typename T> class connection : public std::enable_shared_from_this<con
                                            if (!ec)
                                            {
                                                read_header();
+                                               // read_validation();
                                            }
                                        });
         }
@@ -92,6 +108,10 @@ template <typename T> class connection : public std::enable_shared_from_this<con
     owner m_nOwnerType = owner::server;
     uint32_t id{0};
 
+    uint64_t m_nHandshake_out{0};
+    uint64_t m_nHandshake_in{0};
+    uint64_t m_nHandshake_check{0};
+
   private:
     void write_header()
     {
@@ -116,7 +136,7 @@ template <typename T> class connection : public std::enable_shared_from_this<con
                                      }
                                      else
                                      {
-                                         std::cout << "[" << id << "] Write Header Fail.\n";
+                                         std::cout << "[" << id << "] Write Header Fail: " << ec.message() << ".\n";
                                          m_socket.close();
                                      }
                                  });
@@ -159,7 +179,7 @@ template <typename T> class connection : public std::enable_shared_from_this<con
                                             add_to_incoming_message_queue();
                                         }
                                     }
-                                    else
+                                    else if (ec.value() != boost::asio::error::eof)
                                     {
                                         std::cout << "[" << id << "] Read Header Fail: " << ec.message() << '\n';
                                         m_socket.close();
@@ -191,10 +211,66 @@ template <typename T> class connection : public std::enable_shared_from_this<con
         else
             m_qMessagesIn.push_back({nullptr, m_msgTemporaryIn});
 
-        // We must now prime the asio context to receive the next message. It
-        // wil just sit and wait for bytes to arrive, and the message construction
-        // process repeats itself. Clever huh?
         read_header();
+    }
+
+    auto scramble(uint64_t input) -> uint64_t
+    {
+        uint64_t out = input ^ 0xC0DECAFEDEADBEEF;
+        out = (out & 0xF0F0F0F0F0F0F0) >> 4 | (out & 0x0F0F0F0F0F0F0F) << 4;
+        return out ^ 0x12345678C0DEFACE;
+    }
+
+    void write_validation()
+    {
+        boost::asio::async_write(m_socket, boost::asio::buffer(&m_nHandshake_out, sizeof(uint64_t)),
+                                 [this](std::error_code ec, std::size_t length) {
+                                     if (!ec)
+                                     {
+                                         if (m_nOwnerType == owner::client)
+                                         {
+                                             read_header();
+                                         }
+                                     }
+                                     else
+                                     {
+                                         m_socket.close();
+                                     }
+                                 });
+    }
+
+    void read_validation(net::server_interface<T> *server = nullptr)
+    {
+        boost::asio::async_read(m_socket, boost::asio::buffer(&m_nHandshake_in, sizeof(uint64_t)),
+                                [this, server](std::error_code ec, std::size_t length) {
+                                    if (!ec)
+                                    {
+                                        if (m_nOwnerType == owner::server)
+                                        {
+                                            if (m_nHandshake_in == m_nHandshake_check)
+                                            {
+                                                std::cout << "Client validated\n";
+                                                server->on_client_validated(this->shared_from_this());
+                                                read_header();
+                                            }
+                                            else
+                                            {
+                                                std::cout << "Client disconnected (fail validation)\n";
+                                                m_socket.close();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            m_nHandshake_out = scramble(m_nHandshake_in);
+                                            write_validation();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        std::cout << "Client disconnected (read_validation)\n";
+                                        m_socket.close();
+                                    }
+                                });
     }
 };
 

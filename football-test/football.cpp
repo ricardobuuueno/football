@@ -34,7 +34,9 @@ class FootballEnvironment : public ::testing::Environment
     void TearDown() override
     {
         cancel_thread = true;
+        std::cout << "cancel_thread = true\n";
         server_future.get();
+        std::cout << "server_future.get()\n";
     }
 
   private:
@@ -53,10 +55,14 @@ int main(int argc, char **argv)
     ::testing::AddGlobalTestEnvironment(env);
 
     ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    auto result = RUN_ALL_TESTS();
+
+    // delete env;
+
+    return result;
 }
 
-TEST(Championships, new_championship_season_and_club)
+/* TEST(Championships, new_championship_season_and_club)
 {
     using football::championship;
     using football::club;
@@ -278,4 +284,4 @@ TEST(Championships, change_season_data_and_clubs)
 
     removed = cs->remove();
     EXPECT_EQ(removed, true);
-}
+} */

@@ -36,7 +36,7 @@ TEST(Football_Server, start_server_thread)
         }
     }
 
-    test::sleep(1);
+    // test::sleep(1);
 
     EXPECT_EQ(accepted, true);
     EXPECT_EQ(answered, true);
@@ -90,6 +90,8 @@ TEST(Football_Server, new_championship_event)
         }
     }
 
+    // test::sleep(1);
+
     EXPECT_EQ(accepted, true);
     EXPECT_NE(res.id, 0);
 
@@ -106,7 +108,7 @@ TEST(Football_Server, new_championship_event)
     EXPECT_EQ(cs2.found(), false);
 }
 
-/* TEST(Football_Server, new_club_event)
+TEST(Football_Server, new_club_event)
 {
     const std::string CHAMP{"Prêmier Léague"};
     const std::string CLUB{"Lêtégão 2º Football Club"};
@@ -182,4 +184,4 @@ TEST(Football_Server, new_championship_event)
 
     football::championship cs2{str_id};
     EXPECT_EQ(cs2.found(), false);
-} */
+}

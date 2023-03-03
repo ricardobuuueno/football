@@ -41,6 +41,7 @@ class football_server : public server_interface<event_type>
             auto res = execute_action<net::new_championship>(msg);
             client->send(res);
         }
+        break;
         case event_type::new_club: {
             auto res = execute_action<net::new_club>(msg);
             client->send(res);

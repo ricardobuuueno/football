@@ -84,6 +84,7 @@
         "*.ipp": "cpp",
         "bitset": "cpp",
         "internet": "cpp",
-        "io_context": "cpp"
+        "io_context": "cpp",
+        "future": "cpp"
     }
 }
