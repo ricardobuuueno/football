@@ -29,15 +29,29 @@ class season final : public mysql::table
     {
     }
 
-/*     season(const std::string &id) 
-    : table("seasons", "championship", "year"), _id(id), _championship(championship), _year(year), _clubs{}
+    season(const std::string &id, championship &championship)
+        : table("seasons", "championship", "year"), _id(id), _championship(championship), _year(""), _clubs{}
     {
         if (start("id", _id))
         {
-            _name = get("name");
-            _country = get("country");
+            _id = get("id");
+            _year = get("year");
+
+            start_related();
         }
-    } */
+    }
+
+    season(const std::string &id)
+        : table("seasons", "championship", "year"), _id(id), _championship{}, _year(""), _clubs{}
+    {
+        if (start("id", _id))
+        {
+            _id = get("id");
+            _year = get("year");
+
+            start_related();
+        }
+    }
 
     auto id() const -> std::string override
     {
@@ -95,12 +109,12 @@ class season final : public mysql::table
 
     bool empty() override
     {
-        return (_id.empty() && _championship.empty() && _year.empty() && _clubs.empty());
+        return (_id.empty() && _year.empty() && _clubs.empty());
     }
 
   private:
     std::string _id;
-    football::championship &_championship;
+    const football::championship &_championship;
     std::string _year;
     std::vector<club> _clubs;
 

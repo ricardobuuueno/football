@@ -12,6 +12,7 @@ enum class event_type : uint32_t
     new_championship,
     new_club,
     new_season,
+    new_season_club,
     new_game,
     game_start,
     game_ended,
@@ -43,6 +44,13 @@ struct new_season
     uint64_t championship{0};
     std::array<wchar_t, 10> year;
     event_type type{event_type::new_season};
+};
+
+struct new_season_club
+{
+    uint64_t season{0};
+    uint64_t club{0};
+    event_type type{event_type::new_season_club};
 };
 
 } // namespace net

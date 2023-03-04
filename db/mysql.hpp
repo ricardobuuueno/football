@@ -120,7 +120,7 @@ class table
 
     auto select(const std::string &stmt) -> bool;
     auto select_list(const std::string &stmt) -> bool;
-    auto insert() -> bool;
+    auto insert() -> std::pair<bool, std::string>;
     auto reload() -> bool;
 };
 

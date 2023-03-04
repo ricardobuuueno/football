@@ -57,12 +57,10 @@ int main(int argc, char **argv)
     ::testing::InitGoogleTest(&argc, argv);
     auto result = RUN_ALL_TESTS();
 
-    // delete env;
-
     return result;
 }
 
-/* TEST(Championships, new_championship_season_and_club)
+TEST(Championships, new_championship_season_and_club)
 {
     using football::championship;
     using football::club;
@@ -284,4 +282,4 @@ TEST(Championships, change_season_data_and_clubs)
 
     removed = cs->remove();
     EXPECT_EQ(removed, true);
-} */
+}

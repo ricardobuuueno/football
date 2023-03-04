@@ -160,9 +160,18 @@ auto table::operator<<(std::ostream &o) -> std::ostream &
 
 auto table::save() -> bool
 {
-    populate();
+    try
+    {
+        populate();
+    }
+    catch (std::exception &e)
+    {
+        std::string message = fmt::format("[EXCEPTION] {}", e.what());
+        PLOG_DEBUG << message;
+        return false;
+    }
 
-    if (insert())
+    if (auto [inserted, error_message] = insert(); inserted)
     {
         if (reload())
         {
@@ -170,6 +179,10 @@ auto table::save() -> bool
             PLOG_DEBUG << to_string();
             return save_related();
         }
+    }
+    else
+    {
+        PLOG_DEBUG << error_message;
     }
 
     return false;
@@ -329,23 +342,35 @@ auto table::select_list(const std::string &stmt) -> bool
     return _found;
 }
 
-auto table::insert() -> bool
+auto table::insert() -> std::pair<bool, std::string>
 {
+    std::string message{};
+    bool result{false};
+
     std::string stmt = fmt::format("REPLACE INTO {} ({}) VALUES ({});", tablename, fields(), values());
     PLOG_DEBUG << stmt;
 
-    srv->connect();
-    srv->prepare(stmt);
-    srv->execute();
-    ++_sql_count;
+    try
+    {
+        srv->connect();
+        srv->prepare(stmt);
+        srv->execute();
+        ++_sql_count;
 
-    return true;
+        result = true;
+    }
+    catch (sql::SQLException &e)
+    {
+        message = fmt::format("[EXCEPTION] error_code: {}, message: {}", e.getErrorCode(), e.what());
+    }
+
+    return {result, message};
 }
 
 auto table::reload() -> bool
 {
     std::string stmt = fmt::format("SELECT * FROM {} WHERE {} LIMIT 1;", tablename, key_and_values());
-    ;
+
     return select(stmt);
 }
 

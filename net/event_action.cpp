@@ -2,6 +2,7 @@
 
 #include "../classes/championship.hpp"
 #include "../classes/club.hpp"
+#include "../classes/club_season.hpp"
 #include "../classes/season.hpp"
 
 namespace net
@@ -33,6 +34,22 @@ auto event_action(const new_season &season) -> response
     std::string year(season.year.begin(), std::find(season.year.begin(), season.year.end(), '\0'));
     football::championship cs{cs_id};
     football::season ss{cs, year};
+    bool success = ss.save();
+
+    return {ss.id_int(), success};
+}
+
+auto event_action(const new_season_club &season_club) -> response
+{
+    football::championship cs{};
+
+    std::string season_id = std::to_string(season_club.season);
+    football::season ss{season_id, cs};
+
+    std::string club_id = std::to_string(season_club.club);
+    football::club cl{club_id};
+
+    ss.add_club(cl);
     bool success = ss.save();
 
     return {ss.id_int(), success};

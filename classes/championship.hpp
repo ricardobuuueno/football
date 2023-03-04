@@ -20,10 +20,6 @@ class championship final : public mysql::table
         }
     }
 
-    championship() : championship("")
-    {
-    }
-
     championship(const std::string &id) : table("championships", "name"), _id(id), _name(""), _country("")
     {
         if (start("id", _id))
@@ -31,6 +27,10 @@ class championship final : public mysql::table
             _name = get("name");
             _country = get("country");
         }
+    }
+
+    championship() : championship("")
+    {
     }
 
     championship(const championship &other) : table(other)
