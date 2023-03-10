@@ -117,6 +117,7 @@ class season final : public mysql::table
     const football::championship &_championship;
     std::string _year;
     std::vector<club> _clubs;
+    uint8_t _spots{};
 
     void populate() override
     {

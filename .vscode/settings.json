@@ -85,6 +85,8 @@
         "bitset": "cpp",
         "internet": "cpp",
         "io_context": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "codecvt": "cpp",
+        "source_location": "cpp"
     }
 }

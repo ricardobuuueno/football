@@ -9,7 +9,7 @@
 #include <filesystem>
 #include <iostream>
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[]) // NOLINT
 {
     using namespace football;
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-        server.update();
+        server.update(-1, true);
     }
 
     return 0;

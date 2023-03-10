@@ -9,6 +9,8 @@ set(Boost_NO_WARN_NEW_VERSIONS 1)
 add_subdirectory(classes)
 add_subdirectory(db)
 add_subdirectory(net)
+add_subdirectory(scanner)
+add_subdirectory(pub)
 add_subdirectory(util)
 add_subdirectory(plog)
 
@@ -47,6 +49,8 @@ target_include_directories(db PRIVATE ~/football/db/)
 target_include_directories(net PRIVATE ~/football/net/)
 target_include_directories(util PRIVATE ~/football/util/)
 target_include_directories(plog PRIVATE ~/football/plog/)
+target_include_directories(util PRIVATE ~/football/pub/)
+target_include_directories(util PRIVATE ~/football/scanner/)
 
 
 ######### BOOST ###############
@@ -65,6 +69,7 @@ if(Boost_FOUND)
     target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 endif()
 
+
 ######### RADAR ######################
 
 add_executable(
@@ -77,7 +82,7 @@ PROPERTIES
 RUNTIME_OUTPUT_DIRECTORY "~/football/bin"
 )
 
-target_link_libraries(radar classes db net util)
+target_link_libraries(radar classes db gumbo net scanner pub util)
 
 
 ######### GOOGLE TESTS ###############
@@ -92,7 +97,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 
-#### TEST APPLICATION ###
+######### TEST APPLICATION #############
 
 enable_testing()
 
@@ -102,6 +107,7 @@ add_executable(
   football-test/football.cpp
   football-test/pch.cpp
   football-test/objects.cpp
+  football-test/radar.cpp
 )
 
 set_target_properties(football-test 
@@ -109,7 +115,7 @@ PROPERTIES
 RUNTIME_OUTPUT_DIRECTORY "~/football/bin"
 )
 
-target_link_libraries(football-test GTest::gtest_main classes db net util)
+target_link_libraries(football-test GTest::gtest_main classes db net scanner util)
 
 include(GoogleTest)
 gtest_discover_tests(football-test)
