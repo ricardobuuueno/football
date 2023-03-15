@@ -4,7 +4,7 @@ add_library(scanner
 scheduler.hpp
 task_base.hpp
 task_new_championship.hpp
-task_queue.hpp
+task_result.hpp
 )
 
 set_target_properties(scanner 

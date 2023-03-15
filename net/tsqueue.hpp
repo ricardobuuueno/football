@@ -96,4 +96,7 @@ template <typename T> class tsqueue
     std::mutex blocking_mutex;
 };
 
+template <typename T> using ptsqueue = std::unique_ptr<tsqueue<T>>;
+template <typename T> using stsqueue = std::shared_ptr<tsqueue<T>>;
+
 } // namespace net

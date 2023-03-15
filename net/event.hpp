@@ -16,7 +16,8 @@ enum class event_type : uint32_t
     new_game,
     game_start,
     game_ended,
-    goal_scored
+    goal_scored,
+    unknown
 };
 
 struct response
