@@ -1,6 +1,7 @@
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(util
+../db/mysql.cpp
 constants.hpp
 globals.cpp
 toml.hpp

@@ -8,7 +8,7 @@ namespace scanner
 class new_championship_task : public task_base
 {
   public:
-    new_championship_task(const std::string &url, const std::string &country, uint8_t slots)
+    new_championship_task(const std::string &url, const std::string &country, uint8_t slots) : task_base()
     {
     }
 };

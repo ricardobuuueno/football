@@ -1,5 +1,45 @@
 #include "pch.h"
 
+class RadarEnvironment : public ::testing::Environment
+{
+  public:
+    RadarEnvironment(const std::string &conf_file) : config_file(conf_file)
+    {
+        football::init(config_file);
+    }
+
+    ~RadarEnvironment() override
+    {
+    }
+
+    // Override this to define how to set up the environment.
+    void SetUp() override
+    {
+    }
+
+    // Override this to define how to tear down the environment.
+    void TearDown() override
+    {
+    }
+
+  private:
+    const std::string config_file;
+};
+
+int main(int argc, char **argv)
+{
+    std::string config_filename{argv[0]};
+    config_filename += ".toml";
+
+    RadarEnvironment *env = new RadarEnvironment(config_filename);
+    ::testing::AddGlobalTestEnvironment(env);
+
+    ::testing::InitGoogleTest(&argc, argv);
+    auto result = RUN_ALL_TESTS();
+
+    return result;
+}
+
 TEST(radar, task_scheduler_test)
 {
     using football::New;

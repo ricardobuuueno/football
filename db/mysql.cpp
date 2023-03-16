@@ -300,12 +300,26 @@ auto table::get(const std::string &field_name) const -> std::string
     return {};
 }
 
-void table::set(const std::string &field_name, const std::string &value)
+auto table::get_int(const std::string &field_name) const -> uint64_t
+{
+    if (auto search = fields_values.find(field_name); search != fields_values.end())
+    {
+        return std::stoi(search->second);
+    }
+    return 0;
+}
+
+auto table::set(const std::string &field_name, const std::string &value) -> void
 {
     if (!value.empty())
     {
         fields_values[field_name] = value;
     }
+}
+
+auto table::set(const std::string &field_name, uint64_t value) -> void
+{
+    fields_values[field_name] = std::to_string(value);
 }
 
 // private

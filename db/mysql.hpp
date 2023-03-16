@@ -90,8 +90,10 @@ class table
     auto start_list(const std::string &field1, const std::string &value1) -> bool;
 
     [[nodiscard]] auto get(const std::string &field_name) const -> std::string;
+    [[nodiscard]] auto get_int(const std::string &field_name) const -> uint64_t;
 
-    void set(const std::string &field_name, const std::string &value);
+    auto set(const std::string &field_name, const std::string &value) -> void;
+    auto set(const std::string &field_name, uint64_t value) -> void;
 
     virtual void populate() = 0;
     virtual void reset() = 0;

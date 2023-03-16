@@ -82,6 +82,10 @@ PROPERTIES
 RUNTIME_OUTPUT_DIRECTORY "~/football/bin"
 )
 
+set_target_properties(radar 
+PROPERTIES 
+DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
+
 target_link_libraries(radar classes db gumbo net scanner pub util)
 
 
@@ -97,7 +101,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 
-######### TEST APPLICATION #############
+######### FOOTBALL TEST APPLICATION #############
 
 enable_testing()
 
@@ -107,7 +111,6 @@ add_executable(
   football-test/football.cpp
   football-test/pch.cpp
   football-test/objects.cpp
-  football-test/radar.cpp
 )
 
 set_target_properties(football-test 
@@ -117,5 +120,24 @@ RUNTIME_OUTPUT_DIRECTORY "~/football/bin"
 
 target_link_libraries(football-test GTest::gtest_main classes db net scanner util)
 
+#include(GoogleTest)
+#gtest_discover_tests(football-test)
+
+
+######## RADAR TEST APPLICATION #############
+
+add_executable(
+  radar-test
+  radar-test/pch.cpp
+  radar-test/radar.cpp
+)
+
+set_target_properties(radar-test 
+PROPERTIES 
+RUNTIME_OUTPUT_DIRECTORY "~/football/bin"
+)
+
+target_link_libraries(radar-test GTest::gtest_main classes db net scanner util)
+
 include(GoogleTest)
-gtest_discover_tests(football-test)
+gtest_discover_tests(football-test radar-test)

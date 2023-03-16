@@ -1,0 +1,12 @@
+[mysql]
+server = "localhost"
+port = "3306"
+database = "radar"
+username = "dev"
+password = "dev@123"
+
+[log]
+file = "radar-test.log"
+severity = 5
+maxFileSize = 500000
+maxFiles = 3
