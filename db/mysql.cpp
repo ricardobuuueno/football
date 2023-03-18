@@ -3,6 +3,7 @@
 #include <cppconn/driver.h>
 #include <optional>
 
+#include "../util/json.hpp"
 #include "../util/toml.hpp"
 
 namespace mysql
@@ -57,6 +58,31 @@ void server::prepare(const std::string &stmt)
 void server::execute()
 {
     result = pstmt->executeQuery();
+}
+
+std::string server::prepare_execute(const std::string &stmt)
+{
+    std::scoped_lock(server_mutex);
+    prepare(stmt);
+    execute();
+
+    std::vector<std::pair<std::string, std::string>> tbl;
+    tbl.reserve(result->rowsCount());
+
+    auto meta = result->getMetaData();
+    while (result->next())
+    {
+        for (int i{1}; i <= meta->getColumnCount(); ++i)
+        {
+            auto field = meta->getColumnName(i);
+            auto value = result->getString(i);
+            tbl.emplace_back(field, value);
+        }
+    }
+
+    nlohmann::json j(tbl);
+
+    return j.dump();
 }
 
 auto server::start_transaction() -> void

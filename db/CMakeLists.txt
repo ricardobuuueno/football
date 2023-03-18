@@ -3,6 +3,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(db
 mysql.hpp
 mysql.cpp
+../util/json.hpp
 )
 
 # search for clang-tidy

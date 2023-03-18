@@ -38,6 +38,7 @@ class server final
     void connect();
     void prepare(const std::string &stmt);
     void execute();
+    std::string prepare_execute(const std::string &stmt);
 
     auto start_transaction() -> void;
     auto commit() -> void;
@@ -51,6 +52,8 @@ class server final
     [[nodiscard]] auto last_insert_id(const std::string &tablename) -> uint64_t;
 
   private:
+    std::mutex server_mutex;
+
     sql::Driver *driver{nullptr};
     sql::Connection *connection{nullptr};
     sql::Statement *stmt{nullptr};

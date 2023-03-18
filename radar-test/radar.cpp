@@ -55,14 +55,14 @@ TEST(radar, task_scheduler_test)
     bool saved = new_cs_task->save();
     EXPECT_EQ(saved, true);
 
-    /*     auto queue = NewShared<tsqueue<ptask_result>>();
+    auto queue = NewShared<tsqueue<ptask_result>>();
 
-        auto sched = New<scheduler>(queue);
-        sched->run();
-        sched->wait();
+    auto sched = New<scheduler>(queue);
 
-        auto result = queue->pop_front();
-        auto new_cs_result = dynamic_cast<result_new_championship *>(&(*result)); */
+    /* sched->wait();
+
+            auto result = queue->pop_front();
+            auto new_cs_result = dynamic_cast<result_new_championship *>(&(*result)); */
 }
 
 TEST(radar, find_new_championship)
