@@ -12,6 +12,7 @@
 #include "../net/football_client.hpp"
 #include "../net/football_server.hpp"
 #include "../net/tsqueue.hpp"
+#include "../pub/publisher_base.hpp"
 #include "../scanner/scheduler.hpp"
 #include "../scanner/task_new_championship.hpp"
 #include "../scanner/task_result.hpp"

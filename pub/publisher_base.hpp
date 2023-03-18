@@ -9,6 +9,12 @@
 namespace pub
 {
 
+enum class publisher : uint8_t
+{
+    none,
+    gazeta_esportiva
+};
+
 class publisher_base
 {
   public:

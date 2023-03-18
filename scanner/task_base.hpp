@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../db/mysql.hpp"
+#include "../pub/publisher_base.hpp"
+#include "../util/json.hpp"
 
 #include <memory>
 
@@ -26,13 +28,19 @@ enum class task_status : uint8_t
 class task_base : public mysql::table
 {
   public:
-    task_base(const std::string &id) : table("tasks", "id"), _id(id), _type(task_type::none), _status(task_status::none)
+    task_base(const std::string &id, pub::publisher pub)
+        : table("tasks", "id"), _id(id), _type(task_type::none), _status(task_status::none), _publisher(pub)
     {
         if (start("id", _id))
         {
             _type = static_cast<task_type>(get_int("type"));
             _status = static_cast<task_status>(get_int("status"));
+            _publisher = static_cast<pub::publisher>(get_int("publisher"));
         }
+    }
+
+    explicit task_base(const std::string &id) : task_base(id, pub::publisher::none)
+    {
     }
 
     task_base() : task_base("")
@@ -45,6 +53,7 @@ class task_base : public mysql::table
         _id = other._id;
         _type = other._type;
         _status = other._status;
+        _publisher = other._publisher;
     }
 
     task_base &operator=(const task_base &other)
@@ -52,12 +61,13 @@ class task_base : public mysql::table
         _id = other._id;
         _type = other._type;
         _status = other._status;
+        _publisher = other._publisher;
         return *this;
     }
 
     auto operator==(const task_base &other) const -> bool
     {
-        return (_id == other._id && _type == other._type && _status == other._status);
+        return (_id == other._id && _type == other._type && _status == other._status && _publisher == other._publisher);
     }
 
     [[nodiscard]] auto id() const -> std::string override
@@ -73,6 +83,11 @@ class task_base : public mysql::table
         return _status;
     }
 
+    [[nodiscard]] auto publisher() const -> pub::publisher
+    {
+        return _publisher;
+    }
+
     auto type(const task_type type) -> void
     {
         _type = type;
@@ -82,21 +97,57 @@ class task_base : public mysql::table
         _status = status;
     }
 
+    auto publisher(const pub::publisher publisher) -> void
+    {
+        _publisher = publisher;
+    }
+
     [[nodiscard]] auto empty() -> bool override
     {
-        return (_id.empty() && _type == task_type::none && _status == task_status::none);
+        return (_id.empty() && _type == task_type::none && _status == task_status::none &&
+                _publisher == pub::publisher::none);
+    }
+
+  protected:
+    auto set_property(std::string key, std::string value) -> void
+    {
+        _properties[key] = value;
     }
 
   private:
     std::string _id;
     task_type _type;
     task_status _status;
+    pub::publisher _publisher;
+
+    std::map<std::string, std::string> _properties{};
+
+    auto dump_properties() -> std::string
+    {
+        nlohmann::json j;
+        for (auto const &[key, value] : _properties)
+        {
+            j[key] = value;
+        }
+        return j.dump();
+    }
+
+    auto read_properties(const std::string &props) -> void
+    {
+        auto j = nlohmann::json::parse(props);
+        for (auto &[key, value] : j.items())
+        {
+            set_property(key, value);
+        }
+    }
 
     void populate() override
     {
         set("id", _id);
         set("type", static_cast<uint64_t>(_type));
         set("status", static_cast<uint64_t>(_status));
+        set("publisher", static_cast<uint64_t>(_publisher));
+        set("properties", dump_properties());
     }
 
     void reset() override
@@ -104,6 +155,8 @@ class task_base : public mysql::table
         _id = get("id");
         _type = static_cast<task_type>(get_int("type"));
         _status = static_cast<task_status>(get_int("status"));
+        _publisher = static_cast<pub::publisher>(get_int("publisher"));
+        read_properties(get("properties"));
     }
 };
 

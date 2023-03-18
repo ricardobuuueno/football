@@ -4,6 +4,7 @@ add_library(util
 ../db/mysql.cpp
 constants.hpp
 globals.cpp
+json.hpp
 toml.hpp
 util.cpp
 )
