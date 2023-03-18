@@ -2,6 +2,7 @@
 
 #include <fmt/core.h>
 #include <map>
+#include <mutex>
 
 #include "../plog/Log.h"
 
@@ -46,6 +47,8 @@ class server final
     [[nodiscard]] auto get_value(const std::string &field) const -> std::string;
     [[nodiscard]] auto has_rows() const -> bool;
     auto get_values(std::map<std::string, std::string> &field_values) const -> void;
+
+    [[nodiscard]] auto last_insert_id(const std::string &tablename) -> uint64_t;
 
   private:
     sql::Driver *driver{nullptr};
@@ -116,6 +119,8 @@ class table
     int _sql_count{};
     bool _found;
 
+    std::mutex table_mutex;
+
     [[nodiscard]] auto fields() const -> std::string;
     [[nodiscard]] auto values() const -> std::string;
     auto key_and_values() -> std::string;
@@ -124,6 +129,7 @@ class table
     auto select_list(const std::string &stmt) -> bool;
     auto insert() -> std::pair<bool, std::string>;
     auto reload() -> bool;
+    auto must_get_id() -> bool;
 };
 
 } // namespace mysql

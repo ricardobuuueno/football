@@ -124,6 +124,23 @@ auto server::get_values(std::map<std::string, std::string> &field_values) const 
     }
 }
 
+auto server::last_insert_id(const std::string &tablename) -> uint64_t
+{
+    std::string stmt = fmt::format("SELECT LAST_INSERT_ID() FROM {} LIMIT 1;", tablename);
+
+    prepare(stmt);
+    execute();
+
+    uint64_t value{};
+    while (result->next())
+    {
+        value = result->getUInt64(1);
+    }
+    PLOG_DEBUG << stmt << " (result: " << value << ")";
+
+    return value;
+}
+
 // TABLE
 // ----------------------------------------------------------------------------------------
 
@@ -160,6 +177,8 @@ auto table::operator<<(std::ostream &o) -> std::ostream &
 
 auto table::save() -> bool
 {
+    std::scoped_lock(table_mutex);
+
     try
     {
         populate();
@@ -383,9 +402,25 @@ auto table::insert() -> std::pair<bool, std::string>
 
 auto table::reload() -> bool
 {
+    if (must_get_id())
+    {
+        auto last_id = srv->last_insert_id(tablename);
+        fields_values[key_field1] = std::to_string(last_id);
+    }
+
     std::string stmt = fmt::format("SELECT * FROM {} WHERE {} LIMIT 1;", tablename, key_and_values());
 
     return select(stmt);
+}
+
+auto table::must_get_id() -> bool
+{
+    if (key_field1 == "id")
+    {
+        auto value = fields_values[key_field1];
+        return (value.empty() || value == "NULL");
+    }
+    return false;
 }
 
 auto table::fields() const -> std::string
@@ -417,7 +452,7 @@ auto table::values() const -> std::string
     size_t count{0};
     for (const auto &[field, value] : fields_values)
     {
-        result += ("'" + value + "'");
+        result += ((value == "NULL") ? value : ("'" + value + "'"));
         if (++count < fields_values.size())
         {
             result += ", ";
