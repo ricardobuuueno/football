@@ -66,18 +66,20 @@ std::string server::prepare_execute(const std::string &stmt)
     prepare(stmt);
     execute();
 
-    std::vector<std::pair<std::string, std::string>> tbl;
+    std::vector<std::map<std::string, std::string>> tbl;
     tbl.reserve(result->rowsCount());
 
     auto meta = result->getMetaData();
     while (result->next())
     {
+        std::map<std::string, std::string> row{};
         for (int i{1}; i <= meta->getColumnCount(); ++i)
         {
             auto field = meta->getColumnName(i);
             auto value = result->getString(i);
-            tbl.emplace_back(field, value);
+            row[field] = value;
         }
+        tbl.emplace_back(std::move(row));
     }
 
     nlohmann::json j(tbl);

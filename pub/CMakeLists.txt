@@ -39,6 +39,7 @@ include_directories(~/gumbo-parser/src)
 add_library(pub
 publisher_base.hpp
 gazeta_esportiva.hpp
+runner.hpp
 )
 
 set_target_properties(pub 

@@ -4,6 +4,8 @@
 #include "../pub/publisher_base.hpp"
 #include "../util/json.hpp"
 
+#include "task_result.hpp"
+
 #include <memory>
 
 namespace scanner
@@ -36,6 +38,7 @@ class task_base : public mysql::table
             _type = static_cast<task_type>(get_int("type"));
             _status = static_cast<task_status>(get_int("status"));
             _publisher = static_cast<pub::publisher>(get_int("publisher"));
+            set("properties", dump_properties());
         }
     }
 
@@ -108,6 +111,8 @@ class task_base : public mysql::table
                 _publisher == pub::publisher::none);
     }
 
+    virtual auto run() -> task_result = 0;
+
   protected:
     auto set_property(std::string key, std::string value) -> void
     {
@@ -159,5 +164,7 @@ class task_base : public mysql::table
         read_properties(get("properties"));
     }
 };
+
+using ptask_base = std::unique_ptr<task_base>;
 
 } // namespace scanner

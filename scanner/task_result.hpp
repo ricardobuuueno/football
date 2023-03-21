@@ -10,9 +10,11 @@ namespace scanner
 class task_result
 {
   public:
+    task_result() = default;
     virtual ~task_result() = default;
 
   private:
+  
 };
 
 class result_new_championship : public task_result

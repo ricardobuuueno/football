@@ -8,13 +8,13 @@ namespace pub
 class gazeta_esportiva : public pub::publisher_base
 {
   public:
-    gazeta_esportiva() : pub::publisher_base("https://www.gazetaesportiva.com/campeonatos/")
+    gazeta_esportiva() : pub::publisher_base()
     {
     }
 
-    [[nodiscard]] auto get_championship_clubs(const std::string &championship_name) -> std::list<std::string> override
+    [[nodiscard]] auto get_championship_clubs(const std::string &page_url) -> std::list<std::string> override
     {
-        std::string page_content = extract_html_page(championship_name);
+        std::string page_content = extract_html_page(page_url);
 
         GumboOutput *parsed_response = gumbo_parse(page_content.c_str());
 

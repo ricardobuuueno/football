@@ -3,6 +3,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_library(scanner
 ../db/mysql.hpp
 ../pub/publisher_base.hpp
+../util/globals.hpp
 ../util/json.hpp
 scheduler.hpp
 task_base.hpp

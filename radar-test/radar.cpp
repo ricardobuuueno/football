@@ -46,7 +46,7 @@ TEST(radar, task_scheduler_test)
     using football::NewShared;
     using net::tsqueue;
     using scanner::new_championship_task;
-    using scanner::ptask_result;
+    using scanner::task_result;
     using scanner::result_new_championship;
     using scanner::scheduler;
 
@@ -55,7 +55,7 @@ TEST(radar, task_scheduler_test)
     bool saved = new_cs_task->save();
     EXPECT_EQ(saved, true);
 
-    auto queue = NewShared<tsqueue<ptask_result>>();
+    auto queue = NewShared<tsqueue<task_result>>();
 
     auto sched = New<scheduler>(queue);
 
