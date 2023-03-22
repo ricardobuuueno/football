@@ -12,6 +12,11 @@ class gazeta_esportiva : public pub::publisher_base
     {
     }
 
+    [[nodiscard]] auto get_championship(const std::string &page_url) -> std::string override
+    {
+        return {};
+    }
+
     [[nodiscard]] auto get_championship_clubs(const std::string &page_url) -> std::list<std::string> override
     {
         std::string page_content = extract_html_page(page_url);

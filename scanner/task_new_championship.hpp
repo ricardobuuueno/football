@@ -1,6 +1,9 @@
 #pragma once
 
 #include "task_base.hpp"
+#include "task_new_championship.hpp"
+
+#include "../pub/runner.hpp"
 
 namespace scanner
 {
@@ -27,6 +30,7 @@ class new_championship_task : public task_base
 
     auto run() -> task_result override
     {
+        // auto championship = pub::get_new_championship(publisher(), "");
         return result_new_championship();
     }
 };

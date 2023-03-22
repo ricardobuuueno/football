@@ -6,20 +6,6 @@
 namespace pub
 {
 
-auto get_new_championship(publisher pub, const std::string &url) -> std::list<std::string>
-{
-    std::list<std::string> res{};
-    switch (pub)
-    {
-    case publisher::gazeta_esportiva: {
-        res = gazeta_esportiva gaz{};
-    }
-    break;
-    case publisher::none: {
-    }
-    }
-
-    return res;
-}
+auto get_new_championship(publisher pub, const std::string &url) -> std::string;
 
 } // namespace pub
