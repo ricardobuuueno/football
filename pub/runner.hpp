@@ -6,6 +6,6 @@
 namespace pub
 {
 
-auto get_new_championship(publisher pub, const std::string &url) -> std::string;
+auto get_new_championship(publisher pub, const std::string &url) -> std::tuple<bool, std::string, std::string>;
 
 } // namespace pub

@@ -20,8 +20,22 @@ class task_result
   private:
 };
 
-class result_new_championship : public task_result
+class result_new_championship final : public task_result
 {
+  public:
+    result_new_championship(const std::string &name, const std::string &country, const std::string &slots)
+    {
+        std::copy(name.begin(), name.end(), _championship.name.data());
+        std::copy(country.begin(), country.end(), _championship.country.data());
+    }
+
+    [[nodiscard]] auto get() -> net::new_championship
+    {
+        return _championship;
+    }
+
+  private:
+    net::new_championship _championship{};
 };
 
 using ptask_result = std::unique_ptr<task_result>;

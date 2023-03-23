@@ -3,21 +3,21 @@
 namespace pub
 {
 
-auto get_new_championship(publisher pub, const std::string &url) -> std::string
+auto get_new_championship(publisher pub, const std::string &url) -> std::tuple<bool, std::string, std::string>
 {
-    std::string res{};
+    std::tuple<bool, std::string, std::string> result;
     switch (pub)
     {
     case publisher::gazeta_esportiva: {
         auto publisher = gazeta_esportiva{};
-        res = publisher.get_championship(url);
+        result = publisher.get_championship(url);
     }
     break;
     case publisher::none: {
     }
     }
 
-    return res;
+    return result;
 }
 
 } // namespace pub

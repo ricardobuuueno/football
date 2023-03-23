@@ -73,11 +73,13 @@ class scheduler
 
             for (auto const &task : tasks)
             {
-                auto result = task->run();
-                _queue->push_back(std::move(result));
+                auto task_run_result = task->run();
+
+                auto t_result = std::move(std::get<2>(task_run_result));
+                _queue->push_back(std::move(t_result));
             }
 
-            std::this_thread::sleep_for(std::chrono::seconds(10));
+            std::this_thread::sleep_for(std::chrono::seconds(5));
 
             if (cancel_thread)
             {

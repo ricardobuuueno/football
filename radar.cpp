@@ -12,9 +12,12 @@ int main(int argc, char *argv[])
     football::init(config_filename);
 
     pub::gazeta_esportiva gazeta{};
-    auto clubs = gazeta.get_championship_clubs("paulista");
+    auto championship = gazeta.get_championship("https://www.gazetaesportiva.com/campeonatos/paulista/");
+    std::cout << std::get<2>(championship) << '\n';
 
-    for (auto const &club : clubs)
+    auto clubs = gazeta.get_championship_clubs("https://www.gazetaesportiva.com/campeonatos/paulista/");
+
+    for (auto const &club : std::get<2>(clubs))
     {
         std::cout << club << '\n';
     }

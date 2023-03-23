@@ -28,10 +28,26 @@ class new_championship_task : public task_base
         set_property("slots", slots);
     }
 
-    auto run() -> ptask_result override
+    auto run() -> std::tuple<bool, std::string, ptask_result> override
     {
-        auto championship = pub::get_new_championship(publisher(), "");
-        return football::New<result_new_championship>();
+        auto url = get_property("url");
+        auto search_result = pub::get_new_championship(publisher(), url);
+
+        auto success = std::get<0>(search_result);
+        auto message = std::get<1>(search_result);
+
+        if (success)
+        {
+            auto championship = std::get<2>(search_result);
+            auto country = get_property("country");
+            auto slots = get_property("slots");
+
+            ptask_result result = football::New<result_new_championship>(championship, country, slots);
+
+            return {success, message, std::move(result)};    
+        }
+
+        return {success, message, nullptr};
     }
 };
 

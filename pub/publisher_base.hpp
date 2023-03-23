@@ -18,8 +18,9 @@ enum class publisher : uint8_t
 class publisher_base
 {
   public:
-    virtual auto get_championship(const std::string &page_url) -> std::string = 0;
-    virtual auto get_championship_clubs(const std::string &page_url) -> std::list<std::string> = 0;
+    virtual auto get_championship(const std::string &page_url) -> std::tuple<bool, std::string, std::string> = 0;
+    virtual auto get_championship_clubs(const std::string &page_url)
+        -> std::tuple<bool, std::string, std::list<std::string>> = 0;
 
   protected:
     publisher_base()
