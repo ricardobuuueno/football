@@ -35,10 +35,10 @@ struct environment final
 class server final
 {
   public:
-    void connect();
-    void prepare(const std::string &stmt);
-    void execute();
-    std::string prepare_execute(const std::string &stmt);
+    auto connect() -> void;
+    auto prepare(const std::string &stmt) -> void;
+    auto execute() -> void;
+    auto prepare_execute(const std::string &stmt) -> std::string;
 
     auto start_transaction() -> void;
     auto commit() -> void;

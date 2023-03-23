@@ -28,10 +28,10 @@ class new_championship_task : public task_base
         set_property("slots", slots);
     }
 
-    auto run() -> task_result override
+    auto run() -> ptask_result override
     {
-        // auto championship = pub::get_new_championship(publisher(), "");
-        return result_new_championship();
+        auto championship = pub::get_new_championship(publisher(), "");
+        return football::New<result_new_championship>();
     }
 };
 

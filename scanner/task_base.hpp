@@ -111,7 +111,7 @@ class task_base : public mysql::table
                 _publisher == pub::publisher::none);
     }
 
-    virtual auto run() -> task_result = 0;
+    virtual auto run() -> ptask_result = 0;
 
   protected:
     auto set_property(std::string key, std::string value) -> void

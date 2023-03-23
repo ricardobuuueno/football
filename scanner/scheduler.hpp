@@ -18,7 +18,7 @@ namespace scanner
 class scheduler
 {
   public:
-    explicit scheduler(net::stsqueue<task_result> queue) : _queue(queue)
+    explicit scheduler(net::stsqueue<ptask_result> queue) : _queue(queue)
     {
         sched_future = std::async(std::launch::async, &scheduler::thread_run, this);
     }
@@ -32,7 +32,7 @@ class scheduler
   private:
     std::future<void> sched_future;
     std::atomic_bool cancel_thread{ATOMIC_VAR_INIT(false)};
-    net::stsqueue<scanner::task_result> _queue;
+    net::stsqueue<scanner::ptask_result> _queue;
 
     auto thread_run() -> void
     {
@@ -74,7 +74,7 @@ class scheduler
             for (auto const &task : tasks)
             {
                 auto result = task->run();
-                _queue->push_back(result);
+                _queue->push_back(std::move(result));
             }
 
             std::this_thread::sleep_for(std::chrono::seconds(10));

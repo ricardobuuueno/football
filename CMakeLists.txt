@@ -137,7 +137,7 @@ PROPERTIES
 RUNTIME_OUTPUT_DIRECTORY "~/football/bin"
 )
 
-target_link_libraries(radar-test GTest::gtest_main classes db net scanner util)
+target_link_libraries(radar-test GTest::gtest_main classes db net pub gumbo scanner util)
 
 include(GoogleTest)
 gtest_discover_tests(football-test radar-test)

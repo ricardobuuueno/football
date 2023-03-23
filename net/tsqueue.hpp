@@ -53,7 +53,25 @@ template <typename T> class tsqueue
         cv_wait.notify_one();
     }
 
+    void push_back(T &&item)
+    {
+        std::scoped_lock lock(queue_mutex);
+        ts_queue.emplace_back(std::move(item));
+
+        std::unique_lock<std::mutex> ul(blocking_mutex);
+        cv_wait.notify_one();
+    }
+
     void push_front(const T &item)
+    {
+        std::scoped_lock lock(queue_mutex);
+        ts_queue.emplace_front(std::move(item));
+
+        std::unique_lock<std::mutex> ul(blocking_mutex);
+        cv_wait.notify_one();
+    }
+
+    void push_front(T &&item)
     {
         std::scoped_lock lock(queue_mutex);
         ts_queue.emplace_front(std::move(item));

@@ -30,7 +30,7 @@ auto init(const std::string &config_filename) -> void
 // SERVER
 // ----------------------------------------------------------------------------------------
 
-void server::connect()
+auto server::connect() -> void
 {
     if (!driver)
     {
@@ -50,17 +50,17 @@ void server::connect()
     }
 }
 
-void server::prepare(const std::string &stmt)
+auto server::prepare(const std::string &stmt) -> void
 {
     pstmt = connection->prepareStatement(stmt);
 }
 
-void server::execute()
+auto server::execute() -> void
 {
     result = pstmt->executeQuery();
 }
 
-std::string server::prepare_execute(const std::string &stmt)
+auto server::prepare_execute(const std::string &stmt) -> std::string
 {
     std::scoped_lock(server_mutex);
     prepare(stmt);
