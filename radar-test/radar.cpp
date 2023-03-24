@@ -42,13 +42,13 @@ int main(int argc, char **argv)
 
 TEST(radar, task_scheduler_test)
 {
-    using football::New;
-    using football::NewShared;
     using net::tsqueue;
     using scanner::new_championship_task;
     using scanner::ptask_result;
     using scanner::result_new_championship;
     using scanner::scheduler;
+    using util::New;
+    using util::NewShared;
 
     auto new_cs_task = New<new_championship_task>(pub::publisher::gazeta_esportiva,
                                                   "https://www.gazetaesportiva.com/campeonatos/paulista/", "BR", "16");

@@ -42,9 +42,9 @@ class new_championship_task : public task_base
             auto country = get_property("country");
             auto slots = get_property("slots");
 
-            ptask_result result = football::New<result_new_championship>(championship, country, slots);
+            ptask_result result = util::New<result_new_championship>(championship, country, slots);
 
-            return {success, message, std::move(result)};    
+            return {success, message, std::move(result)};
         }
 
         return {success, message, nullptr};

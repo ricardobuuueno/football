@@ -17,6 +17,7 @@
 #include "../scanner/task_new_championship.hpp"
 #include "../scanner/task_result.hpp"
 #include "../util/globals.hpp"
+#include "../util/util.hpp"
 #include "gtest/gtest.h"
 
 #include <future>

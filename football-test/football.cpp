@@ -64,8 +64,8 @@ TEST(Championships, new_championship_season_and_club)
 {
     using football::championship;
     using football::club;
-    using football::New;
     using football::season;
+    using util::New;
 
     const std::string CHAMPIONSHIP{"Championship"};
     const std::string COUNTRY{"GB"};
@@ -121,7 +121,7 @@ TEST(Championships, new_championship_season_and_club)
 TEST(Championships, new_championship_added)
 {
     using football::championship;
-    using football::New;
+    using util::New;
 
     const std::string CHAMPIONSHIP{"Championship"};
     const std::string COUNTRY{"GB"};
@@ -148,8 +148,8 @@ TEST(Championships, start_new_season)
 {
     using football::championship;
     using football::club;
-    using football::New;
     using football::season;
+    using util::New;
 
     const char CLUB_COUNT{20};
     const std::string COUNTRY{"AR"};
@@ -227,8 +227,8 @@ TEST(Championships, change_season_data_and_clubs)
 {
     using football::championship;
     using football::club;
-    using football::New;
     using football::season;
+    using util::New;
 
     auto cs = New<championship>("National Championship", "GB");
     auto saved = cs->save();

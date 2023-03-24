@@ -126,8 +126,8 @@ TEST(Objects, season)
 {
     using football::championship;
     using football::club;
-    using football::New;
     using football::season;
+    using util::New;
 
     const std::string CHAMPIONSHIP{"Championship"};
     const std::string COUNTRY{"GB"};

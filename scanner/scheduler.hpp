@@ -3,6 +3,7 @@
 #include "../db/mysql.hpp"
 #include "../net/tsqueue.hpp"
 #include "../util/globals.hpp"
+#include "../util/util.hpp"
 
 #include "task_base.hpp"
 #include "task_new_championship.hpp"
@@ -64,7 +65,7 @@ class scheduler
                 switch (static_cast<scanner::task_type>(type))
                 {
                 case scanner::task_type::new_championship: {
-                    auto task = football::New<scanner::new_championship_task>(id);
+                    auto task = util::New<scanner::new_championship_task>(id);
                     tasks.emplace_back(std::move(task));
                 }
                 break;

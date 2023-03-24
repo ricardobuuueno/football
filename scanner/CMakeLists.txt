@@ -6,6 +6,7 @@ add_library(scanner
 ../pub/runner.cpp
 ../util/globals.hpp
 ../util/json.hpp
+../util/util.hpp
 scheduler.hpp
 task_base.hpp
 task_new_championship.hpp
