@@ -17,6 +17,8 @@ class task_result
     task_result &operator=(task_result &&) = default;
     virtual ~task_result() = default;
 
+    virtual auto json() -> std::string = 0;
+
   private:
 };
 
@@ -32,6 +34,15 @@ class result_new_championship final : public task_result
     [[nodiscard]] auto get() -> net::new_championship
     {
         return _championship;
+    }
+
+    [[nodiscard]] auto json() -> std::string override
+    {
+        nlohmann::json j;
+        j["name"] = std::string(_championship.name.begin(),
+                                std::find(_championship.name.begin(), _championship.name.end(), '\0'));
+        j["country"] = std::string(std::begin(_championship.country), std::end(_championship.country));
+        return j.dump();
     }
 
   private:

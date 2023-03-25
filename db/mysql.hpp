@@ -127,10 +127,12 @@ class table
     [[nodiscard]] auto fields() const -> std::string;
     [[nodiscard]] auto values() const -> std::string;
     auto key_and_values() -> std::string;
+    auto update_values() -> std::string;
 
     auto select(const std::string &stmt) -> bool;
     auto select_list(const std::string &stmt) -> bool;
     auto insert() -> std::pair<bool, std::string>;
+    auto update() -> std::pair<bool, std::string>;
     auto reload() -> bool;
     auto must_get_id() -> bool;
 };

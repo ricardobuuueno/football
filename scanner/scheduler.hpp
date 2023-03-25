@@ -56,7 +56,8 @@ class scheduler
             for (auto &row : tbl)
             {
                 std::cout << row["id"] << '\n';
-                std::string id = row["id"].dump();
+                std::string sid = row["id"].dump();
+                sid.erase(remove(sid.begin(), sid.end(), '\"'), sid.end());
                 std::string stype = row["type"].dump();
                 stype.erase(remove(stype.begin(), stype.end(), '\"'), stype.end());
                 std::cout << stype << '\n';
@@ -65,19 +66,39 @@ class scheduler
                 switch (static_cast<scanner::task_type>(type))
                 {
                 case scanner::task_type::new_championship: {
-                    auto task = util::New<scanner::new_championship_task>(id);
+                    auto task = util::New<scanner::new_championship_task>(sid);
                     tasks.emplace_back(std::move(task));
                 }
                 break;
                 }
             }
 
-            for (auto const &task : tasks)
+            for (auto &task : tasks)
             {
-                auto task_run_result = task->run();
+                task->status(scanner::task_status::running);
+                if (task->save())
+                {
+                    auto task_run_result = task->run();
 
-                auto t_result = std::move(std::get<2>(task_run_result));
-                _queue->push_back(std::move(t_result));
+                    if (auto success = std::get<0>(task_run_result); success)
+                    {
+                        auto result = std::move(std::get<2>(task_run_result));
+
+                        task->results(result->json());
+                        task->status(scanner::task_status::finished);
+                        if (task->save())
+                        {
+                            _queue->push_back(std::move(result));
+                        }
+                    }
+                    else
+                    {
+                        auto message = std::move(std::get<1>(task_run_result));
+                        task->results(message);
+                        task->status(scanner::task_status::error);
+                        auto saved = task->save();
+                    }
+                }
             }
 
             std::this_thread::sleep_for(std::chrono::seconds(5));

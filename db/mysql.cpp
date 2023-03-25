@@ -420,7 +420,32 @@ auto table::insert() -> std::pair<bool, std::string>
 
         result = true;
     }
-    catch (sql::SQLException &e)
+    catch (const sql::SQLException &e)
+    {
+        message = fmt::format("[EXCEPTION] error_code: {}, message: {}", e.getErrorCode(), e.what());
+    }
+
+    return {result, message};
+}
+
+auto table::update() -> std::pair<bool, std::string>
+{
+    std::string message{};
+    bool result{false};
+
+    std::string stmt = fmt::format("UPDATE {} SET {} WHERE {};", tablename, update_values(), key_and_values());
+    PLOG_DEBUG << stmt;
+
+    try
+    {
+        srv->connect();
+        srv->prepare(stmt);
+        srv->execute();
+        ++_sql_count;
+
+        result = true;
+    }
+    catch (const sql::SQLException &e)
     {
         message = fmt::format("[EXCEPTION] error_code: {}, message: {}", e.getErrorCode(), e.what());
     }
@@ -498,6 +523,23 @@ auto table::key_and_values() -> std::string
         stmt += fmt::format(" AND {} = '{}'", key_field2, fields_values[key_field2]);
     }
     return stmt;
+}
+
+auto table::update_values() -> std::string
+{
+    std::string result{};
+
+    size_t count{0};
+    for (const auto &[field, value] : fields_values)
+    {
+        result += (field + " = " + ((value == "NULL") ? value : ("'" + value + "'")));
+        if (++count < fields_values.size())
+        {
+            result += ", ";
+        }
+    }
+
+    return result;
 }
 
 } // namespace mysql

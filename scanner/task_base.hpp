@@ -31,14 +31,16 @@ class task_base : public mysql::table
 {
   public:
     task_base(const std::string &id, pub::publisher pub)
-        : table("tasks", "id"), _id(id), _type(task_type::none), _status(task_status::none), _publisher(pub)
+        : table("tasks", "id"), _id(id), _type(task_type::none), _status(task_status::none), _publisher(pub),
+          _results("")
     {
         if (start("id", _id))
         {
             _type = static_cast<task_type>(get_int("type"));
             _status = static_cast<task_status>(get_int("status"));
             _publisher = static_cast<pub::publisher>(get_int("publisher"));
-            set("properties", dump_properties());
+            _results = get("results");
+            read_properties(get("properties"));
         }
     }
 
@@ -57,6 +59,18 @@ class task_base : public mysql::table
         _type = other._type;
         _status = other._status;
         _publisher = other._publisher;
+        _properties = other._properties;
+        _results = other._results;
+    }
+
+    task_base(task_base &&other) : table(other)
+    {
+        _id = other._id;
+        _type = other._type;
+        _status = other._status;
+        _publisher = other._publisher;
+        _properties = other._properties;
+        _results = other._results;
     }
 
     task_base &operator=(const task_base &other)
@@ -65,6 +79,19 @@ class task_base : public mysql::table
         _type = other._type;
         _status = other._status;
         _publisher = other._publisher;
+        _properties = other._properties;
+        _results = other._results;
+        return *this;
+    }
+
+    task_base &operator=(task_base &&other)
+    {
+        _id = other._id;
+        _type = other._type;
+        _status = other._status;
+        _publisher = other._publisher;
+        _properties = other._properties;
+        _results = other._results;
         return *this;
     }
 
@@ -91,6 +118,11 @@ class task_base : public mysql::table
         return _publisher;
     }
 
+    [[nodiscard]] auto results() const -> std::string
+    {
+        return _results;
+    }
+
     auto type(const task_type type) -> void
     {
         _type = type;
@@ -103,6 +135,11 @@ class task_base : public mysql::table
     auto publisher(const pub::publisher publisher) -> void
     {
         _publisher = publisher;
+    }
+
+    auto results(const std::string results) -> void
+    {
+        _results = results;
     }
 
     [[nodiscard]] auto empty() -> bool override
@@ -129,10 +166,11 @@ class task_base : public mysql::table
     task_type _type;
     task_status _status;
     pub::publisher _publisher;
+    std::string _results;
 
     std::map<std::string, std::string> _properties{};
 
-    auto dump_properties() -> std::string
+    virtual auto dump_properties() -> std::string
     {
         nlohmann::json j;
         for (auto const &[key, value] : _properties)
@@ -142,7 +180,7 @@ class task_base : public mysql::table
         return j.dump();
     }
 
-    auto read_properties(const std::string &props) -> void
+    virtual auto read_properties(const std::string &props) -> void
     {
         auto j = nlohmann::json::parse(props);
         for (auto &[key, value] : j.items())
@@ -158,6 +196,7 @@ class task_base : public mysql::table
         set("status", static_cast<uint64_t>(_status));
         set("publisher", static_cast<uint64_t>(_publisher));
         set("properties", dump_properties());
+        set("results", _results);
     }
 
     void reset() override
@@ -166,6 +205,7 @@ class task_base : public mysql::table
         _type = static_cast<task_type>(get_int("type"));
         _status = static_cast<task_status>(get_int("status"));
         _publisher = static_cast<pub::publisher>(get_int("publisher"));
+        _results = get("results");
         read_properties(get("properties"));
     }
 };
