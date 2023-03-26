@@ -34,9 +34,9 @@ class FootballEnvironment : public ::testing::Environment
     void TearDown() override
     {
         cancel_thread = true;
-        std::cout << "cancel_thread = true\n";
+        std::cout << "football::cancel_thread = true\n";
         server_future.get();
-        std::cout << "server_future.get()\n";
+        std::cout << "football::server_future.get()\n";
     }
 
   private:

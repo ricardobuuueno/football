@@ -1,11 +1,13 @@
 #include "pch.h"
 
+const std::string HOST{"127.0.0.1"};
+const uint16_t PORT{60000};
+
 class RadarEnvironment : public ::testing::Environment
 {
   public:
     RadarEnvironment(const std::string &conf_file) : config_file(conf_file)
     {
-        football::init(config_file);
     }
 
     ~RadarEnvironment() override
@@ -15,15 +17,35 @@ class RadarEnvironment : public ::testing::Environment
     // Override this to define how to set up the environment.
     void SetUp() override
     {
+        football::init(config_file);
+
+        server_future = std::async(std::launch::async, [&]() {
+            net::football_server server(PORT);
+            server.start();
+            while (true)
+            {
+                server.update();
+                if (cancel_thread && server.no_inbound_message())
+                {
+                    break;
+                }
+            }
+        });
     }
 
     // Override this to define how to tear down the environment.
     void TearDown() override
     {
+        cancel_thread = true;
+        std::cout << "radar::cancel_thread = true\n";
+        server_future.get();
+        std::cout << "radar::server_future.get()\n";
     }
 
   private:
     const std::string config_file;
+    std::atomic_bool cancel_thread{ATOMIC_VAR_INIT(false)};
+    std::future<void> server_future;
 };
 
 int main(int argc, char **argv)
@@ -58,6 +80,11 @@ TEST(radar, task_scheduler_test)
     auto queue = NewShared<tsqueue<ptask_result>>();
 
     auto sched = New<scheduler>(queue);
+
+    net::football_client client{queue};
+    client.connect(HOST, PORT);
+
+    client.listen();
 
     /* sched->wait();
 

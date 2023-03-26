@@ -2,6 +2,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_library(net
 ../db/mysql.cpp
+../scanner/task_result.hpp
+../util/json.hpp
+../util/util.hpp
 client.hpp
 common.hpp
 connection.hpp

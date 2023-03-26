@@ -86,7 +86,7 @@ set_target_properties(radar
 PROPERTIES 
 DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX})
 
-target_link_libraries(radar classes db gumbo net scanner pub util)
+target_link_libraries(radar classes db net pub gumbo scanner util)
 
 
 ######### GOOGLE TESTS ###############

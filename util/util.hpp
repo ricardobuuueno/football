@@ -18,4 +18,9 @@ template <typename T, typename... A> auto NewShared(A &&...args) -> std::shared_
     return std::shared_ptr<T>(new T(std::forward<A>(args)...));
 }
 
+template <typename Base, typename Derived> auto New(Base *b) -> std::unique_ptr<Derived>
+{
+    return std::unique_ptr<Derived>(dynamic_cast<Derived *>(b));
+}
+
 } // namespace util
